@@ -1,0 +1,25 @@
+# Emacs style *~ backup files
+*~
+
+# *.stackdump files occur if Perl fails
+*.stackdump
+
+Thumbs.db
+
+# files in node_modules can always be obtained using npm
+node_modules
+
+# brackets files are to be strictly local
+.brackets.json*
+
+# same holds for npm-debug.log files
+npm-debug.log*
+
+# exclude .orig files by kdiff3
+*.orig
+
+# exclude .idea folder of webstorm
+.idea
+
+# Ignore test logs
+test.log
