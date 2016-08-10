@@ -1,6 +1,6 @@
 {
   "name": "guide4you-builder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A builder for Guide4You.",
   "keywords": [
     "tool",
@@ -36,6 +36,7 @@
     "ignore-loader": "^0.1.1",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
+    "mkdirp": "^0.5.1",
     "mustache": "^2.2.1",
     "node-getopt": "^0.2.3",
     "raw-loader": "^0.5.1",
