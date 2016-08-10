@@ -5,6 +5,7 @@
 let fs = require('fs')
 let path = require('path')
 let rimraf = require('rimraf')
+let mkdirp = require('mkdirp')
 
 let babel = require('babel-core')
 let webpack = require('webpack')
@@ -16,7 +17,7 @@ let outputDir = path.join(baseDir, 'build/tests')
 let mask = /.*_spec\.js$/
 
 rimraf.sync(outputDir)
-fs.mkdir(outputDir)
+mkdirp.sync(outputDir)
 
 let seleniumDir = path.join(inputDir, 'selenium')
 if (fs.existsSync(seleniumDir)) {
