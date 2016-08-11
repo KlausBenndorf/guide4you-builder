@@ -43,7 +43,7 @@
     "script-loader": "^0.7.0",
     "selenium-webdriver": "^2.46.1",
     "sinon": "^1.17.3",
-    "standard": "^7.0.1",
+    "standard": "^7.1.2",
     "strip-json-comments": "^1.0.1",
     "style-loader": "^0.13.1",
     "webpack": "latest",
