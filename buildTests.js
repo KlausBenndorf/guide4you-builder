@@ -19,67 +19,57 @@ let mask = /.*_spec\.js$/
 rimraf.sync(outputDir)
 mkdirp.sync(outputDir)
 
-let seleniumDir = path.join(inputDir, 'selenium')
-if (fs.existsSync(seleniumDir)) {
-  let babelOptions = {
-    presets: ['es2015']
-  }
+let testDirs = ['selenium', 'unit-tests']
 
-  for (let filename of fs.readdirSync(seleniumDir)) {
-    let code = babel.transformFileSync(path.join(seleniumDir, filename), babelOptions).code
-    fs.writeFileSync(path.join(outputDir, filename), code)
-  }
-}
-
-let unitTestsDir = path.join(inputDir, 'unit-tests')
-if (fs.existsSync(unitTestsDir)) {
-  for (let file of fs.readdirSync(unitTestsDir).filter(f => f.match(mask))) {
-    let webpackConfig = {
-      entry: path.join(unitTestsDir, file),
-      target: 'node',
-      externals: {
-        'selenium-webdriver/testing/assert': 'commonjs selenium-webdriver/testing/assert'
-      },
-      context: baseDir,
-      module: {
-        loaders: [
-          {
-            loader: 'babel-loader',
-            test: /\.js$/,
-            exclude: /node_modules/,
-            query: {
-              presets: 'es2015'
-            }
+for (let testDir of testDirs) {
+  testDir = path.join(inputDir, testDir)
+  if (fs.existsSync(testDir)) {
+    for (let file of fs.readdirSync(testDir).filter(f => f.match(mask))) {
+      let webpackConfig = {
+        entry: {
+          [file]: path.join(testDir, file)
+        },
+        target: 'node',
+        externals: function(context, request, callback) {
+          if (!request.match(/(guide4you)|(^\.)/)) {
+            callback(null, 'commonjs ' + request)
+          } else {
+            callback(null, false)
           }
-        ]
-      },
-      output: {
-        path: outputDir
-      },
-      resolve: {
-        root: baseDir,
-        alias: {
-          jquery: 'jquery/dist/jquery.min',
-          openlayers: 'openlayers/dist/ol'
+        },
+        module: {
+          loaders: [
+            {
+              loader: 'babel-loader',
+              test: /\.js$/,
+              exclude: /node_modules.(?!guide4you)/,
+              query: {
+                presets: 'es2015'
+              }
+            }
+          ]
+        },
+        output: {
+          filename: '[name]',
+          path: outputDir
         }
       }
-    }
 
-    webpack(webpackConfig, function (err, stats) {
-      if (err) {
-        console.log('Error : ' + err.message)
-      } else if (stats) {
-        let jsonStats = stats.toJson()
-        if (jsonStats.warnings.length > 0) {
-          console.log('warnings:')
-          console.log(jsonStats.warnings)
+      webpack(webpackConfig, function (err, stats) {
+        if (err) {
+          console.log('Error : ' + err.message)
+        } else if (stats) {
+          let jsonStats = stats.toJson()
+          if (jsonStats.warnings.length > 0) {
+            console.log('warnings:')
+            console.log(jsonStats.warnings)
+          }
+          if (jsonStats.errors.length > 0) {
+            console.log('errors:')
+            console.log(jsonStats.errors)
+          }
         }
-        if (jsonStats.errors.length > 0) {
-          console.log('errors:')
-          console.log(jsonStats.errors)
-        }
-      }
-    })
+      })
+    }
   }
 }
-
