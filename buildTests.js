@@ -7,7 +7,6 @@ let path = require('path')
 let rimraf = require('rimraf')
 let mkdirp = require('mkdirp')
 
-let babel = require('babel-core')
 let webpack = require('webpack')
 
 let baseDir = process.cwd()
@@ -30,7 +29,7 @@ for (let testDir of testDirs) {
           [file]: path.join(testDir, file)
         },
         target: 'node',
-        externals: function(context, request, callback) {
+        externals: function (context, request, callback) {
           if (!request.match(/(guide4you)|(^\.)/)) {
             callback(null, 'commonjs ' + request)
           } else {
