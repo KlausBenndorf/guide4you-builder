@@ -9,6 +9,8 @@ let rimraf = require('rimraf')
 let webpack = require('webpack')
 let WebpackDevServer = require('webpack-dev-server')
 
+let devProxyConfig = require('./devProxyConfig')
+
 var webpackMerge = require('webpack-merge')
 
 let args = getopt.create([
@@ -35,6 +37,8 @@ if (args.options.mode === 'dev') {
   buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.dev.js'))
   let serverConf = buildConf.devServer
   delete buildConf.devServer
+  serverConf.proxy = devProxyConfig(buildConf)
+  console.log(JSON.stringify(serverConf.proxy))
   let port = parseInt(args.options.port) || 8080
   buildConf.output.publicPath = `http://localhost:${port}/`
   let compiler = webpack(buildConf)
