@@ -12,7 +12,6 @@ module.exports = function (webpackConfig) {
         let proxyPrefix = proxyUrl.replace(/\{url\}/, '')
         let cleanedURI = req.url.replace(new RegExp('^' + proxyPrefix), '')
         req.url = decodeURIComponent(cleanedURI)
-        console.log(req.url)
       }
     }
   }
