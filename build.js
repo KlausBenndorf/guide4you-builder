@@ -10,6 +10,7 @@ const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 
 const devProxyConfig = require('./devProxyConfig')
+const selectConfig = require('./selectConfig')
 
 const webpackMerge = require('webpack-merge')
 
@@ -39,7 +40,6 @@ if (args.options.mode === 'dev') {
   let serverConf = buildConf.devServer
   delete buildConf.devServer
   serverConf.proxy = devProxyConfig(buildConf)
-  console.log(JSON.stringify(serverConf.proxy))
   let port = parseInt(args.options.port) || 8080
   buildConf.output.publicPath = `http://localhost:${port}/`
   let compiler = webpack(buildConf)

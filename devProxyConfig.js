@@ -8,7 +8,7 @@ module.exports = function (webpackConfig) {
     proxyConfig[proxy] = {
       target,
       secure: false,
-      rewrite: function(req) {
+      rewrite: req => {
         let proxyPrefix = proxyUrl.replace(/\{url\}/, '')
         let cleanedURI = req.url.replace(new RegExp('^' + proxyPrefix), '')
         req.url = decodeURIComponent(cleanedURI)
