@@ -2,14 +2,17 @@
 
 'use strict'
 
-let path = require('path')
-let getopt = require('node-getopt')
-let rimraf = require('rimraf')
+const path = require('path')
+const getopt = require('node-getopt')
+const rimraf = require('rimraf')
 
-let webpack = require('webpack')
-let WebpackDevServer = require('webpack-dev-server')
+const webpack = require('webpack')
+const WebpackDevServer = require('webpack-dev-server')
 
-var webpackMerge = require('webpack-merge')
+const devProxyConfig = require('./devProxyConfig')
+const selectConfig = require('./selectConfig')
+
+const webpackMerge = require('webpack-merge')
 
 let args = getopt.create([
   ['m', 'mode=', 'The mode of the application. Either "dev" or "prod".'],
@@ -33,8 +36,10 @@ let buildConf = require(path.join(configPath, 'webpack.js'))
 
 if (args.options.mode === 'dev') {
   buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.dev.js'))
+  buildConf = selectConfig(buildConf, 'dev')
   let serverConf = buildConf.devServer
   delete buildConf.devServer
+  serverConf.proxy = devProxyConfig(buildConf)
   let port = parseInt(args.options.port) || 8080
   buildConf.output.publicPath = `http://localhost:${port}/`
   let compiler = webpack(buildConf)
@@ -42,6 +47,7 @@ if (args.options.mode === 'dev') {
   server.listen(port)
 } else if (args.options.mode === 'prod') {
   buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.prod.js'))
+  buildConf = selectConfig(buildConf, 'prod')
   rimraf.sync(path.join(baseDir, buildConf.output.path))
   let compiler = webpack(buildConf)
   compiler.run((err, stats) => {
