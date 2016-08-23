@@ -11,9 +11,13 @@ let commonConf = require('./webpack.common.js')
 let baseDir = process.cwd()
 
 let packageObj = JSON.parse(fs.readFileSync(path.join(baseDir, 'package.json'), 'utf-8'))
-let softwareInfo = '/*\n * ' + packageObj.name + '\n * Version: ' + packageObj.version + '\n * Date: ' +
-  (new Date()).toDateString() + '\n * copyright (c) ' + (new Date()).getFullYear() + ' ' + packageObj.author + '\n * ' +
-  packageObj.homepage + '\n */'
+let softwareInfo = `
+/*
+ * ${packageObj.name}
+ * Version: ${packageObj.version} (built ${(new Date()).toDateString()})
+ * License: ${packageObj.license} (https://spdx.org/licenses/${packageObj.license}.html)
+ * Homepage: ${packageObj.homepage}
+ */`
 
 module.exports = webpackMerge(commonConf, {
   resolve: {
