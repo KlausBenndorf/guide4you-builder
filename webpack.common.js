@@ -10,7 +10,7 @@ let baseDir = process.cwd()
 
 module.exports = {
   entry: {
-    'lib/ol.js': [ './src/openlayers.js' ]
+    'lib/ol.js': [ path.join(baseDir, 'node_modules/guide4you-builder/openlayersChunk.js') ]
   },
   target: 'web',
   context: baseDir,
@@ -39,7 +39,7 @@ module.exports = {
       },
       {
         loader: 'mustache-eval-loader',
-        // name: '[path][name].[ext]',
+        name: 'images/[name].[ext]',
         test: /\.svg$/
       },
       {
