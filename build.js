@@ -69,7 +69,8 @@ if (args.options.mode === 'dev') {
   compiler.run((err, stats) => {
     if (err) {
       console.log('Error : ' + err.message)
-    } else if (stats) {
+    }
+    if (stats) {
       let jsonStats = stats.toJson()
       if (jsonStats.warnings.length > 0) {
         console.log('warnings:')
