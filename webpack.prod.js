@@ -35,7 +35,7 @@ module.exports = webpackMerge(commonConf, {
       sourceMap: false,
       compress: {
         screw_ie8: true,
-        dead_code: true, // jshint ignore:line
+        dead_code: true,
         warnings: false,
         unused: true
       },
