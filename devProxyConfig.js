@@ -4,14 +4,13 @@ module.exports = function (webpackConfig) {
   let proxyConfig = {}
   for (let validRequest of validRequests) {
     let target = 'http://' + validRequest
-    let proxy = proxyUrl.replace(/\{url\}/, encodeURIComponent(target) + '*')
+    let proxy = proxyUrl.replace(/\{url}/, encodeURIComponent(target)) + '*'
     proxyConfig[proxy] = {
-      target,
+      target: target,
+      changeOrigin: true,
       secure: false,
-      rewrite: req => {
-        let proxyPrefix = proxyUrl.replace(/\{url\}/, '')
-        let cleanedURI = req.url.replace(new RegExp('^' + proxyPrefix), '')
-        req.url = decodeURIComponent(cleanedURI)
+      pathRewrite: function (path, req) {
+        return decodeURIComponent(path.replace(proxy.slice(0, -1), ''))
       }
     }
   }
