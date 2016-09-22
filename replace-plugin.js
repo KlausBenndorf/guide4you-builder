@@ -1,4 +1,5 @@
 let RawSource = require('webpack-sources').RawSource
+
 module.exports = class ReplacePlugin {
   constructor (filePattern, replacePattern, replacement) {
     this.filePattern = filePattern
