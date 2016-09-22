@@ -3,21 +3,32 @@
 let webpack = require('webpack')
 let webpackMerge = require('webpack-merge')
 let ExtractTextPlugin = require('extract-text-webpack-plugin')
-let ReplacePlugin = require('./replace-plugin')
-let path = require('path')
-let fs = require('fs')
+let LicenseBannerPlugin = require('./license-banner-plugin')
 
 let commonConf = require('./webpack.common.js')
 
-let baseDir = process.cwd()
+let legalTemplate = '{{#license}}{{#author}}{{{author}}}, {{/author}}' +
+  'License: {{license}} (https://spdx.org/licenses/{{license}}.html){{/license}}' +
+  '{{^license}}(c) {{author}}{{/license}}'
 
-let packageObj = JSON.parse(fs.readFileSync(path.join(baseDir, 'package.json'), 'utf-8'))
-let softwareInfo = `/*!
- * ${packageObj.name}
- * Version: ${packageObj.version} (built ${(new Date()).toDateString()})
- * License: ${packageObj.license} (https://spdx.org/licenses/${packageObj.license}.html)
- * Homepage: ${packageObj.homepage}
+let softwareInfoTemplate = `/*!
+ * {{name}}
+ * Version: {{version}} (built {{date}})
+ * ${legalTemplate}
+ * Homepage: {{{homepage}}}
+ *
+ * This software contains (parts of) the following software packages:
+{{#dependencies}}
+ * {{name}} v{{version}}, {{{homepage}}}, ${legalTemplate}
+{{/dependencies}}
  */`
+
+let g4uPackageInfo = require('../../package.json')
+if (g4uPackageInfo.name !== 'guide4you') {
+  g4uPackageInfo = require('guide4you/package.json')
+}
+
+const g4uVersion = g4uPackageInfo.version
 
 module.exports = webpackMerge(commonConf, {
   resolve: {
@@ -26,7 +37,7 @@ module.exports = webpackMerge(commonConf, {
     }
   },
   plugins: [
-    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'' }),
+    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin('css/g4u.css'),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
@@ -39,14 +50,17 @@ module.exports = webpackMerge(commonConf, {
         warnings: false,
         unused: true
       },
+      comments: false,
       beautify: false,
       exclude: /ol\.js/
     }),
-    new ReplacePlugin(/.js$/, /\/\*+!/g, '\n\n$&'),
-    new webpack.BannerPlugin(softwareInfo, {
+    new LicenseBannerPlugin({
+      bannerTemplate: softwareInfoTemplate,
       raw: true,
-      entryOnly: true,
-      exclude: /ol\.js/
+      additionalData: {
+        date: (new Date()).toDateString()
+      },
+      recursiveInclude: /.*guide4you.*/
     })
   ],
   mustacheEvalLoader: {
