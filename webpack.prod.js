@@ -4,7 +4,6 @@ let webpack = require('webpack')
 let webpackMerge = require('webpack-merge')
 let ExtractTextPlugin = require('extract-text-webpack-plugin')
 let LicenseBannerPlugin = require('./license-banner-plugin')
-let g4uVersion = require('guide4you/package.json').version
 
 let commonConf = require('./webpack.common.js')
 
@@ -24,6 +23,13 @@ let softwareInfoTemplate = `/*!
 {{/dependencies}}
  */`
 
+let g4uPackageInfo = require('../../package.json')
+if (g4uPackageInfo.name !== 'guide4you') {
+  g4uPackageInfo = require('guide4you/package.json')
+}
+
+const g4uVersion = g4uPackageInfo.version
+
 module.exports = webpackMerge(commonConf, {
   resolve: {
     alias: {
@@ -31,7 +37,7 @@ module.exports = webpackMerge(commonConf, {
     }
   },
   plugins: [
-    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: 'v' + g4uVersion }),
+    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin('css/g4u.css'),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
