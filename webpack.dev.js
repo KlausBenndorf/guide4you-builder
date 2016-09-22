@@ -27,7 +27,7 @@ module.exports = webpackMerge(commonConf, {
     }
   },
   plugins: [
-    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\''}),
+    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin('css/g4u.[hash].css'),
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map'
