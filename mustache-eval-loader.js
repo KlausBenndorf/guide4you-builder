@@ -5,9 +5,7 @@ module.exports = function (content) {
   this.cacheable(false)
   if (!this.emitFile) throw new Error('emitFile is required from module system')
 
-  var query = loaderUtils.parseQuery(this.query)
-  var configKey = query.config || 'mustacheEvalLoader'
-  var options = this.options[configKey] || {}
+  var options = loaderUtils.getLoaderConfig(this, 'mustacheEvalLoader')
 
   var config = {
     publicPath: false,
@@ -17,11 +15,6 @@ module.exports = function (content) {
   // options takes precedence over config
   Object.keys(options).forEach(function (attr) {
     config[attr] = options[attr]
-  })
-
-  // query takes precedence over config and options
-  Object.keys(query).forEach(function (attr) {
-    config[attr] = query[attr]
   })
 
   var url = loaderUtils.interpolateName(this, config.name, {
@@ -41,9 +34,7 @@ module.exports = function (content) {
     )
   }
 
-  if (query.emitFile === undefined || query.emitFile) {
-    this.emitFile(url, Mustache.render(content, options.templateVars))
-  }
+  this.emitFile(url, Mustache.render(content, config.templateVars))
 
   return 'module.exports = ' + publicPath + ';'
 }
