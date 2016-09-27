@@ -1,17 +1,20 @@
 'use strict'
 
-let webpack = require('webpack')
-let webpackMerge = require('webpack-merge')
-let ExtractTextPlugin = require('extract-text-webpack-plugin')
-let LicenseBannerPlugin = require('./license-banner-plugin')
+const webpack = require('webpack')
+const webpackMerge = require('webpack-merge')
+const path = require('path')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const LicenseBannerPlugin = require('./license-banner-plugin')
 
 let commonConf = require('./webpack.common.js')
 
-let legalTemplate = '{{#license}}{{#author}}{{{author}}}, {{/author}}' +
+const baseDir = process.cwd()
+
+const legalTemplate = '{{#license}}{{#author}}{{{author}}}, {{/author}}' +
   'License: {{license}} (https://spdx.org/licenses/{{license}}.html){{/license}}' +
   '{{^license}}(c) {{author}}{{/license}}'
 
-let softwareInfoTemplate = `/*!
+const softwareInfoTemplate = `/*!
  * {{name}}
  * Version: {{version}} (built {{date}})
  * ${legalTemplate}
@@ -33,7 +36,7 @@ const g4uVersion = g4uPackageInfo.version
 module.exports = webpackMerge(commonConf, {
   resolve: {
     alias: {
-      openlayers: 'openlayers/dist/ol'
+      openlayers: path.join(baseDir, 'node_modules/openlayers/dist/ol')
     }
   },
   plugins: [

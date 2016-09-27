@@ -1,12 +1,12 @@
 'use strict'
 
-let webpack = require('webpack')
-let path = require('path')
-let ExtractTextPlugin = require('extract-text-webpack-plugin')
-let GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
-var DedupCSSPlugin = require('dedupcss-webpack-plugin')
+const webpack = require('webpack')
+const path = require('path')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
+const DedupCSSPlugin = require('dedupcss-webpack-plugin')
 
-let baseDir = process.cwd()
+const baseDir = process.cwd()
 
 module.exports = {
   entry: {
