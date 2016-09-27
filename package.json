@@ -42,7 +42,7 @@
     "script-loader": "0.7.0",
     "selenium-webdriver": "2.53.3",
     "sinon": "1.17.5",
-    "standard": "8.1.0",
+    "standard": "8.2.0",
     "strip-json-comments": "2.0.1",
     "style-loader": "0.13.1",
     "webpack": "1.13.1",
