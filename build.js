@@ -5,6 +5,7 @@
 const path = require('path')
 const getopt = require('node-getopt')
 const rimraf = require('rimraf')
+const fs = require('fs')
 
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
@@ -32,9 +33,14 @@ if (!args.options.hasOwnProperty('conf')) {
 
 const baseDir = process.cwd()
 const configPath = path.join(baseDir, args.options.conf)
+const webpackConfigPath = path.join(configPath, 'webpack.js')
 
 // get the webpack.js file from the folder
-let buildConf = require(path.join(configPath, 'webpack.js'))
+if (!fs.statSync(webpackConfigPath).isFile()) {
+  throw new Error('Wrong directory or missing webpack.js file in specified directory.')
+}
+
+let buildConf = require(webpackConfigPath)
 
 if (args.options.mode === 'dev') {
   // choose dev config wherever possible
