@@ -14,10 +14,9 @@ for (let i = 2; i < process.argv.length; i++) {
   let sourceRepoPath = path.join(curDir, '..', reponame)
   try {
     fs.lstatSync(nodeModulePath)
-  }
-  catch (e) {
-    if (e.code !== 'ENOENT') {
-      throw 'please install package before linking'
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      throw new Error('please install package before linking')
     }
   }
 
@@ -43,8 +42,7 @@ for (let i = 2; i < process.argv.length; i++) {
           fs.symlinkSync(srcFilePath, destFilePath)
           console.log('linked ' + srcFilePath)
         }
-      }
-      catch (e) {
+      } catch (e) {
         if (e.code !== 'ENOENT') {
           throw e
         } else {

@@ -53,7 +53,8 @@
   "bin": {
     "g4u-build": "./build.js",
     "g4u-buildTests": "./buildTests.js",
-    "g4u-link": "./link-repo.js"
+    "g4u-link": "./link-repo.js",
+    "g4u-unlink": "./unlink-repo.js"
   },
   "scripts": {
     "lint": "eslint .",
