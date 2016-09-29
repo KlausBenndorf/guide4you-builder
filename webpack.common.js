@@ -23,7 +23,7 @@ module.exports = {
   resolve: {
     root: baseDir,
     alias: {
-      jquery: path.join(baseDir, '/node_modules/jquery/dist/jquery.min')
+      jquery: path.join(baseDir, 'node_modules/jquery/dist/jquery.min')
     }
   },
   module: {

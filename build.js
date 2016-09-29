@@ -36,8 +36,13 @@ const configPath = path.join(baseDir, args.options.conf)
 const webpackConfigPath = path.join(configPath, 'webpack.js')
 
 // get the webpack.js file from the folder
-if (!fs.statSync(webpackConfigPath).isFile()) {
-  throw new Error('Wrong directory or missing webpack.js file in specified directory.')
+try {
+  fs.statSync(webpackConfigPath)
+}
+catch (e) {
+  if (e.code === "ENOENT") {
+    throw new Error('Wrong directory or missing webpack.js file in specified directory.')
+  }
 }
 
 let buildConf = require(webpackConfigPath)

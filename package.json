@@ -52,7 +52,8 @@
   },
   "bin": {
     "g4u-build": "./build.js",
-    "g4u-buildTests": "./buildTests.js"
+    "g4u-buildTests": "./buildTests.js",
+    "g4u-link": "./link-repo.js"
   },
   "scripts": {
     "lint": "eslint .",
