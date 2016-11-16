@@ -37,7 +37,7 @@ const webpackConfigPath = path.join(configPath, 'webpack.js')
 
 // get the webpack.js file from the folder
 try {
-  fs.statSync(webpackConfigPath)
+  fs.accessSync(webpackConfigPath)
 } catch (e) {
   if (e.code === 'ENOENT') {
     throw new Error('Wrong directory or missing webpack.js file in specified directory.')

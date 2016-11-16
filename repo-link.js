@@ -47,6 +47,7 @@ for (let i = 2; i < process.argv.length; i++) {
           throw e
         } else {
           fs.symlinkSync(srcFilePath, destFilePath)
+          console.log('linked ' + srcFilePath)
         }
       }
     }
