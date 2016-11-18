@@ -5,6 +5,7 @@ const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
 const DedupCSSPlugin = require('dedupcss-webpack-plugin')
+const DedupeByRefPlugin = require('./dedupe-by-ref-plugin')
 
 const baseDir = process.cwd()
 
@@ -54,6 +55,7 @@ module.exports = {
   },
   plugins: [
     new webpack.NoErrorsPlugin(),
+    new DedupeByRefPlugin(),
     new GatherPolyfillsPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
       name: [ 'lib/g4u.js', 'lib/ol.js' ]
