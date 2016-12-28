@@ -71,7 +71,10 @@ module.exports = webpackMerge(commonConf, {
   },
   output: {
     filename: '[name]',
-    chunkFilename: '[name]'
+    chunkFilename: '[name]',
+    library: 'guide4you',
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
   },
   stats: {
     colors: true,
