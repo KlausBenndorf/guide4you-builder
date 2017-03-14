@@ -54,13 +54,16 @@ module.exports = class LicenseBannerPlugin {
 
   apply (compiler) {
     let options = this.options
+
     let bannerTemplate = this.bannerTemplate
 
     let templateData = this.adjustPackageInfo(require(path.join(this.basePath, 'package.json')))
 
     let dependencies = [this.adjustPackageInfo(require('webpack/package.json'))]
     this.parsePackageInfo(templateData, dependencies)
-    templateData.dependencies = dependencies.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1)
+    templateData.dependencies = dependencies
+      .filter(dep => !compiler.options.externals.hasOwnProperty(dep.name))
+      .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1)
 
     if (options.additionalData) {
       Object.assign(templateData, options.additionalData)
@@ -74,9 +77,11 @@ module.exports = class LicenseBannerPlugin {
           if (options.entryOnly && !chunk.initial) {
             return
           }
-          chunk.files.filter(ModuleFilenameHelpers.matchObject.bind(undefined, options)).forEach(file => {
-            compilation.assets[file] = new ConcatSource(banner, '\n', compilation.assets[file])
-          })
+          chunk.files
+            .filter(ModuleFilenameHelpers.matchObject.bind(undefined, options))
+            .forEach(file => {
+              compilation.assets[file] = new ConcatSource(banner, '\n', compilation.assets[file])
+            })
         })
         callback()
       })

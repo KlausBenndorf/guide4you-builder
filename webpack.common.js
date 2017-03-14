@@ -10,9 +10,6 @@ const DedupeByRefPlugin = require('./dedupe-by-ref-plugin')
 const baseDir = process.cwd()
 
 module.exports = {
-  entry: {
-    'lib/ol.js': [ path.join(baseDir, 'node_modules/guide4you-builder/openlayersChunk.js') ]
-  },
   target: 'web',
   context: baseDir,
   resolveLoader: {
@@ -22,10 +19,7 @@ module.exports = {
     }
   },
   resolve: {
-    root: baseDir,
-    alias: {
-      jquery: path.join(baseDir, 'node_modules/jquery/dist/jquery.min')
-    }
+    root: baseDir
   },
   module: {
     loaders: [
@@ -46,20 +40,23 @@ module.exports = {
       }
     ],
     noParse: [
-      /.*\\ol(-debug)?\.js/,
-      /.*\/ol(-debug)?\.js/,
-      /.*\\jquery\.min\.js/,
-      /.*\/jquery\.min\.js/,
       /proj4\.js$/
     ]
+  },
+  output: {
+    filename: 'g4u.js',
+    library: 'g4u',
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
+  },
+  externals: {
+    "openlayers": "ol",
+    "jquery": "jQuery"
   },
   plugins: [
     new webpack.NoErrorsPlugin(),
     new DedupeByRefPlugin(),
     new GatherPolyfillsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: [ 'lib/g4u.js', 'lib/ol.js' ]
-    }),
     new DedupCSSPlugin({
       override: true
     })

@@ -34,11 +34,6 @@ if (g4uPackageInfo.name !== 'guide4you') {
 const g4uVersion = g4uPackageInfo.version
 
 module.exports = webpackMerge(commonConf, {
-  resolve: {
-    alias: {
-      openlayers: path.join(baseDir, 'node_modules/openlayers/dist/ol')
-    }
-  },
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin('css/g4u.css'),
@@ -68,13 +63,6 @@ module.exports = webpackMerge(commonConf, {
   ],
   mustacheEvalLoader: {
     name: '[path][name].[ext]'
-  },
-  output: {
-    filename: '[name]',
-    chunkFilename: '[name]',
-    library: 'guide4you',
-    libraryTarget: 'umd',
-    umdNamedDefine: true,
   },
   stats: {
     colors: true,

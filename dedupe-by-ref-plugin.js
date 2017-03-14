@@ -60,7 +60,7 @@ class DedupeByRefPlugin extends DedupePlugin {
         let _source = _children[_i]
         if (typeof _source === 'string' && _source.indexOf('deduplicated modules')) {
           _children[_i] = _source.replace(
-            /(modules\[i\]\s*=\s*modules\[modules\[i\]\];)/,
+            /modules\[i]\s*=\s*modules\[modules\[i]];/,
             '// $1'
           )
         }

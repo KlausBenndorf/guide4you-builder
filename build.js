@@ -69,6 +69,7 @@ if (args.options.mode === 'dev') {
 } else if (args.options.mode === 'prod') {
   // choose prod config wherever possible
   buildConf = selectConfig(buildConf, 'prod')
+
   // merge with base prod config
   buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.prod.js'))
   if (args.options.hasOwnProperty('debug')) {
@@ -88,6 +89,56 @@ if (args.options.mode === 'dev') {
   }
   // compile
   let compiler = webpack(buildConf)
+  compiler.run((err, stats) => {
+    if (err) {
+      console.log('Error : ' + err.message)
+    }
+    if (stats) {
+      let jsonStats = stats.toJson()
+      if (jsonStats.warnings.length > 0) {
+        console.log('warnings:')
+        console.log(jsonStats.warnings)
+      }
+      if (jsonStats.errors.length > 0) {
+        console.log('errors:')
+        console.log(jsonStats.errors)
+      }
+    }
+  })
+} else if (args.options.mode === 'dist') {
+  // choose prod config wherever possible
+  buildConf = selectConfig(buildConf, 'prod')
+
+  // merge with base library config
+  let buildConf1 = webpackMerge(buildConf, require('guide4you-builder/webpack.debug.js'))
+
+  // merge with base library config
+  let buildConf2 = webpackMerge(buildConf, require('guide4you-builder/webpack.prod.js'))
+
+  if (!buildConf.output.merge) {
+    // delete old build
+    rimraf.sync(buildConf.output.path)
+  }
+  // compile
+  let compiler = webpack(buildConf1)
+  compiler.run((err, stats) => {
+    if (err) {
+      console.log('Error : ' + err.message)
+    }
+    if (stats) {
+      let jsonStats = stats.toJson()
+      if (jsonStats.warnings.length > 0) {
+        console.log('warnings:')
+        console.log(jsonStats.warnings)
+      }
+      if (jsonStats.errors.length > 0) {
+        console.log('errors:')
+        console.log(jsonStats.errors)
+      }
+    }
+  })
+
+  compiler = webpack(buildConf2)
   compiler.run((err, stats) => {
     if (err) {
       console.log('Error : ' + err.message)
