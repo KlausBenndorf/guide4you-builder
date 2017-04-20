@@ -18,7 +18,8 @@ const webpackMerge = require('webpack-merge')
 let args = getopt.create([
   [ 'm', 'mode=', 'The mode of the application. Either "dev" or "prod".' ],
   [ 'c', 'conf=', 'The config directory.' ],
-  [ 'p', 'port=', 'The port to use. Defaults to 8080.' ]
+  [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
+  [ 'd', 'debug', 'Debug mode. No uglification.' ]
 ])
   .bindHelp()
   .parseSystem()
@@ -70,6 +71,15 @@ if (args.options.mode === 'dev') {
   buildConf = selectConfig(buildConf, 'prod')
   // merge with base prod config
   buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.prod.js'))
+  let index
+  for (let i = 0; i < buildConf.plugins.length; i++) {
+    if (buildConf.plugins[i] instanceof webpack.optimize.UglifyJsPlugin) {
+      index = i
+    }
+  }
+  if (index) {
+    buildConf.plugins.splice(index, 1)
+  }
   if (!buildConf.output.merge) {
     // delete old build
     rimraf.sync(buildConf.output.path)
