@@ -71,14 +71,16 @@ if (args.options.mode === 'dev') {
   buildConf = selectConfig(buildConf, 'prod')
   // merge with base prod config
   buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.prod.js'))
-  let index
-  for (let i = 0; i < buildConf.plugins.length; i++) {
-    if (buildConf.plugins[i] instanceof webpack.optimize.UglifyJsPlugin) {
-      index = i
+  if (args.options.hasOwnProperty('debug')) {
+    let index
+    for (let i = 0; i < buildConf.plugins.length; i++) {
+      if (buildConf.plugins[i] instanceof webpack.optimize.UglifyJsPlugin) {
+        index = i
+      }
     }
-  }
-  if (index) {
-    buildConf.plugins.splice(index, 1)
+    if (index) {
+      buildConf.plugins.splice(index, 1)
+    }
   }
   if (!buildConf.output.merge) {
     // delete old build
