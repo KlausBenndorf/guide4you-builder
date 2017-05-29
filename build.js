@@ -19,7 +19,8 @@ let args = getopt.create([
   [ 'm', 'mode=', 'The mode of the application. Either "dev" or "prod".' ],
   [ 'c', 'conf=', 'The config directory.' ],
   [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
-  [ 'd', 'debug', 'Debug mode. No uglification.' ]
+  [ 'd', 'debug', 'Debug mode. No uglification.' ],
+  [ 'h', 'host=', 'The host to use. Defaults to localhost.']
 ])
   .bindHelp()
   .parseSystem()
@@ -60,12 +61,14 @@ if (args.options.mode === 'dev') {
   // take port out of arguments
   let port = parseInt(args.options.port) || 8080
   // set proper public path
-  buildConf.output.publicPath = `http://localhost:${port}/`
+  let host = args.options.host || 'localhost'
+  buildConf.output.publicPath = `http://${host}:${port}/`
   // compile
   let compiler = webpack(buildConf)
   // start server
   let server = new WebpackDevServer(compiler, serverConf)
   server.listen(port)
+  console.log(`Starting server on http://${host}:${port}/`)
 } else if (args.options.mode === 'prod') {
   // choose prod config wherever possible
   buildConf = selectConfig(buildConf, 'prod')
