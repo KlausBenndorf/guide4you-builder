@@ -53,18 +53,14 @@ module.exports = {
     filename: 'g4u.js',
     library: 'g4u',
     libraryTarget: 'umd',
-    umdNamedDefine: true,
+    umdNamedDefine: true
   },
   externals: {
-    "openlayers": "ol",
-    "jquery": "jQuery"
+    'openlayers': 'ol',
+    'jquery': 'jQuery'
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
-    //new DedupeByRefPlugin(),
-    new GatherPolyfillsPlugin(),
-    // new DedupCSSPlugin({
-    //   override: true
-    // })
+    new GatherPolyfillsPlugin()
   ]
 }

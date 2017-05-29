@@ -2,13 +2,12 @@
 
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
-const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const LicenseBannerPlugin = require('./license-banner-plugin')
 
 let commonConf = require('./webpack.common.js')
 
-const baseDir = process.cwd()
+// const baseDir = process.cwd()
 
 const legalTemplate = '{{#license}}{{#author}}{{{author}}}, {{/author}}' +
   'License: {{license}} (https://spdx.org/licenses/{{license}}.html){{/license}}' +

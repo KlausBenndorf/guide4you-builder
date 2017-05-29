@@ -20,7 +20,7 @@ let args = getopt.create([
   [ 'c', 'conf=', 'The config directory.' ],
   [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
   [ 'd', 'debug', 'Debug mode. No uglification.' ],
-  [ 'h', 'host=', 'The host to use. Defaults to localhost.']
+  [ 'h', 'host=', 'The host to use. Defaults to localhost.' ]
 ])
   .bindHelp()
   .parseSystem()

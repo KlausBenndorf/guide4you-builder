@@ -3,7 +3,6 @@
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const path = require('path')
 
 const commonConf = require('./webpack.common.js')
 
@@ -14,7 +13,7 @@ if (g4uPackageInfo.name !== 'guide4you') {
 
 const g4uVersion = g4uPackageInfo.version
 
-let baseDir = process.cwd()
+// let baseDir = process.cwd()
 
 module.exports = webpackMerge.smart(commonConf, {
   entry: {
