@@ -1,6 +1,7 @@
 module.exports = function (webpackConfig) {
-  let proxyUrl = webpackConfig.mustacheEvalLoader.templateVars.ajaxProxy
-  let validRequests = webpackConfig.mustacheEvalLoader.templateVars.proxyValidRequests
+  let templateVars = require('./mustache-eval-loader').getTemplateVars()
+  let proxyUrl = templateVars.ajaxProxy
+  let validRequests = templateVars.proxyValidRequests
   let proxyConfig = {}
   for (let validRequest of validRequests) {
     let target = 'http://' + validRequest

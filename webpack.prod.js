@@ -33,10 +33,12 @@ if (g4uPackageInfo.name !== 'guide4you') {
 
 const g4uVersion = g4uPackageInfo.version
 
-module.exports = webpackMerge(commonConf, {
+module.exports = webpackMerge.smart(commonConf, {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
-    new ExtractTextPlugin('css/g4u.css'),
+    new ExtractTextPlugin({
+      filename: 'css/g4u.css'
+    }),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
         screw_ie8: true
@@ -61,9 +63,6 @@ module.exports = webpackMerge(commonConf, {
       recursiveInclude: /.*guide4you.*/
     })
   ],
-  mustacheEvalLoader: {
-    name: '[path][name].[ext]'
-  },
   stats: {
     colors: true,
     chunks: false

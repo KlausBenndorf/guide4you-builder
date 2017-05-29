@@ -17,14 +17,13 @@ const g4uVersion = g4uPackageInfo.version
 
 let baseDir = process.cwd()
 
-module.exports = webpackMerge(commonConf, {
+module.exports = webpackMerge.smart(commonConf, {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
-    new ExtractTextPlugin('css/g4u-debug.css')
+    new ExtractTextPlugin({
+      filename: 'css/g4u-debug.css'
+    })
   ],
-  mustacheEvalLoader: {
-    name: '[path][name].[ext]'
-  },
   output: {
     filename: 'g4u-debug.js'
   }

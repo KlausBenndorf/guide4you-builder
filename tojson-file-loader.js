@@ -4,9 +4,7 @@ module.exports = function (content) {
   this.cacheable(false)
   if (!this.emitFile) throw new Error('emitFile is required from module system')
 
-  var query = loaderUtils.parseQuery(this.query)
-  var configKey = query.config || 'toJSONFileLoader'
-  var options = this.options[configKey] || {}
+  var options = loaderUtils.getOptions(this)
 
   var config = {
     publicPath: false,
@@ -16,11 +14,6 @@ module.exports = function (content) {
   // options takes precedence over config
   Object.keys(options).forEach(function (attr) {
     config[attr] = options[attr]
-  })
-
-  // query takes precedence over config and options
-  Object.keys(query).forEach(function (attr) {
-    config[attr] = query[attr]
   })
 
   var url = loaderUtils.interpolateName(this, config.name, {
@@ -40,7 +33,7 @@ module.exports = function (content) {
     )
   }
 
-  if (query.emitFile === undefined || query.emitFile) {
+  if (config.emitFile === undefined || config.emitFile) {
     this.emitFile(url, JSON.stringify(this.exec(content, this.resourcePath)))
   }
 

@@ -1,11 +1,13 @@
 var Mustache = require('mustache')
 var loaderUtils = require('loader-utils')
 
+let templateVars
+
 module.exports = function (content) {
   this.cacheable(false)
   if (!this.emitFile) throw new Error('emitFile is required from module system')
 
-  var options = loaderUtils.getLoaderConfig(this, 'mustacheEvalLoader')
+  var options = loaderUtils.getOptions(this)
 
   var config = {
     publicPath: false,
@@ -34,7 +36,15 @@ module.exports = function (content) {
     )
   }
 
-  this.emitFile(url, Mustache.render(content, config.templateVars))
+  this.emitFile(url, Mustache.render(content, templateVars))
 
   return 'module.exports = ' + publicPath + ';'
+}
+
+module.exports.setTemplateVars = function (tVars) {
+  templateVars = tVars
+}
+
+module.exports.getTemplateVars = function () {
+  return templateVars
 }

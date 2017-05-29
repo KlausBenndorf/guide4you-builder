@@ -16,20 +16,19 @@ const g4uVersion = g4uPackageInfo.version
 
 let baseDir = process.cwd()
 
-module.exports = webpackMerge(commonConf, {
+module.exports = webpackMerge.smart(commonConf, {
   entry: {
     'lib/g4u.js': [ 'webpack-dev-server/client?http://localhost:8080/' ]
   },
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
-    new ExtractTextPlugin('css/g4u.[hash].css'),
+    new ExtractTextPlugin({
+      filename: 'css/g4u.[hash].css'
+    }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map'
     })
   ],
-  mustacheEvalLoader: {
-    name: '[path][name].[hash].[ext]'
-  },
   output: {
     filename: 'g4u-[hash].js'
   },

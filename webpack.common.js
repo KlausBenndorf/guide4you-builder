@@ -4,8 +4,6 @@ const webpack = require('webpack')
 const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
-const DedupCSSPlugin = require('dedupcss-webpack-plugin')
-const DedupeByRefPlugin = require('./dedupe-by-ref-plugin')
 
 const baseDir = process.cwd()
 
@@ -19,13 +17,16 @@ module.exports = {
     }
   },
   resolve: {
-    root: baseDir
+    modules: [
+      baseDir,
+      'node_modules'
+    ]
   },
   module: {
-    loaders: [
+    rules: [
       {
-        loader: 'babel-loader',
         test: /\.js$/,
+        loader: 'babel-loader',
         exclude: /(node_modules.(?!guide4you))/,
         query: {
           presets: [ 'es2015-ie' ],
@@ -34,7 +35,12 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader', {
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            'css-loader',
+            'less-loader'
+          ],
           publicPath: '../'
         })
       }
@@ -54,11 +60,11 @@ module.exports = {
     "jquery": "jQuery"
   },
   plugins: [
-    new webpack.NoErrorsPlugin(),
-    new DedupeByRefPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    //new DedupeByRefPlugin(),
     new GatherPolyfillsPlugin(),
-    new DedupCSSPlugin({
-      override: true
-    })
+    // new DedupCSSPlugin({
+    //   override: true
+    // })
   ]
 }
