@@ -46,11 +46,12 @@ module.exports = {
       }
     ],
     noParse: [
-      /proj4\.js$/
+      /proj4\.js$/,
+      /ol\.js$/,
+      /jquery\.min\.js$/
     ]
   },
   output: {
-    filename: 'g4u.js',
     library: 'g4u',
     libraryTarget: 'umd',
     umdNamedDefine: true
@@ -60,7 +61,7 @@ module.exports = {
     'jquery': 'jQuery'
   },
   plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
+    // new webpack.NoEmitOnErrorsPlugin(),
     new GatherPolyfillsPlugin()
   ]
 }
