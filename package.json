@@ -44,7 +44,7 @@
     "strip-json-comments": "2.0.1",
     "style-loader": "0.13.1",
     "webpack": "1.13.1",
-    "webpack-dev-server": "1.15.2",
+    "webpack-dev-server": "2.3.0",
     "webpack-merge": "0.14.1",
     "worker-loader": "0.7.1"
   },
