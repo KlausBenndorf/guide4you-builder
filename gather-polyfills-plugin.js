@@ -30,8 +30,8 @@ module.exports = class GatherPolyfillsPlugin {
 
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (htmlPluginData, callback) => {
-        let polyAddress = this.address + polyfillValues.join(',')
-        htmlPluginData.assets.js.push(polyAddress)
+        let polyAddress = this.address + polyfillValues.join(',') + '&flags=gated'
+        htmlPluginData.assets.js.unshift(polyAddress)
         callback(null, htmlPluginData)
       })
     })

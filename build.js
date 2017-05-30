@@ -122,9 +122,11 @@ if (args.options.mode === 'dev') {
 
   // merge with base library config
   let buildConf1 = webpackMerge.smart(buildConf, require('guide4you-builder/webpack.debug.js'))
+  buildConf1.output.filename = buildConf1.output.filename.replace('lib/', '')
 
   // merge with base library config
   let buildConf2 = webpackMerge.smart(buildConf, require('guide4you-builder/webpack.prod.js'))
+  buildConf2.output.filename = buildConf2.output.filename.replace('lib/', '')
 
   let mustacheEvalLoader = require('./mustache-eval-loader')
   mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'prod'))

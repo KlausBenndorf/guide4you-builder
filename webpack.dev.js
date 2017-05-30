@@ -17,7 +17,7 @@ const g4uVersion = g4uPackageInfo.version
 
 module.exports = webpackMerge.smart(commonConf, {
   entry: {
-    'lib/g4u.js': [ 'webpack-dev-server/client?http://localhost:8080/' ]
+    'g4u': [ 'webpack-dev-server/client?http://localhost:8080/' ]
   },
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
@@ -29,7 +29,7 @@ module.exports = webpackMerge.smart(commonConf, {
     })
   ],
   output: {
-    filename: 'g4u-[hash].js'
+    filename: 'lib/g4u-[hash].js'
   },
   devServer: {
     quiet: false,

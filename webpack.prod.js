@@ -62,6 +62,9 @@ module.exports = webpackMerge.smart(commonConf, {
       recursiveInclude: /.*guide4you.*/
     })
   ],
+  output: {
+    filename: 'lib/g4u.js'
+  },
   stats: {
     colors: true,
     chunks: false

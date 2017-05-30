@@ -8,29 +8,36 @@ const GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
 const baseDir = process.cwd()
 
 module.exports = {
+  entry: {
+    'g4u': [ 'babel-polyfill' ]
+  },
   target: 'web',
-  context: baseDir,
   resolveLoader: {
     alias: {
       'mustache-eval-loader': path.join(baseDir, 'node_modules/guide4you-builder/mustache-eval-loader'),
-      'tojson-file-loader': path.join(baseDir, 'node_modules/guide4you-builder/tojson-file-loader')
+      'tojson-file-loader': path.join(baseDir, 'node_modules/guide4you-builder/tojson-file-loader')//,
+      //'core-js/library/fn/symbol/iterator': 'babel-polyfill-silencer/iterator', // silence babel polyfill
+      //'core-js/library/fn/symbol': 'babel-polyfill-silencer/symbol' // silence babel polyfill
     }
   },
   resolve: {
     modules: [
       baseDir,
       'node_modules'
-    ]
+    ],
+    extensions: ['.js']
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
         exclude: /(node_modules.(?!guide4you))/,
-        query: {
-          presets: [ 'es2015-ie' ],
-          plugins: [ 'transform-runtime' ]
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [ 'env' ],
+            // plugins: [ 'transform-runtime' ]
+          }
         }
       },
       {
@@ -46,9 +53,7 @@ module.exports = {
       }
     ],
     noParse: [
-      /proj4\.js$/,
-      /ol\.js$/,
-      /jquery\.min\.js$/
+      /proj4\.js$/
     ]
   },
   output: {
@@ -61,7 +66,7 @@ module.exports = {
     'jquery': 'jQuery'
   },
   plugins: [
-    // new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new GatherPolyfillsPlugin()
   ]
 }
