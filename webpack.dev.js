@@ -40,7 +40,6 @@ module.exports = webpackMerge.smart(commonConf, {
     },
     publicPath: '/',
     inline: true,
-    // headers: { 'X-Custom-Header': 'yes' },
     stats: {
       colors: true,
       chunks: false

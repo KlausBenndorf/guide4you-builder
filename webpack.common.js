@@ -15,9 +15,7 @@ module.exports = {
   resolveLoader: {
     alias: {
       'mustache-eval-loader': path.join(baseDir, 'node_modules/guide4you-builder/mustache-eval-loader'),
-      'tojson-file-loader': path.join(baseDir, 'node_modules/guide4you-builder/tojson-file-loader')//,
-      //'core-js/library/fn/symbol/iterator': 'babel-polyfill-silencer/iterator', // silence babel polyfill
-      //'core-js/library/fn/symbol': 'babel-polyfill-silencer/symbol' // silence babel polyfill
+      'tojson-file-loader': path.join(baseDir, 'node_modules/guide4you-builder/tojson-file-loader')
     }
   },
   resolve: {
@@ -35,8 +33,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [ 'env' ],
-            // plugins: [ 'transform-runtime' ]
+            presets: [ 'env' ]
           }
         }
       },
