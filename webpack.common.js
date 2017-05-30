@@ -4,17 +4,14 @@ const webpack = require('webpack')
 const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
-const DedupCSSPlugin = require('dedupcss-webpack-plugin')
-const DedupeByRefPlugin = require('./dedupe-by-ref-plugin')
 
 const baseDir = process.cwd()
 
 module.exports = {
   entry: {
-    'lib/ol.js': [ path.join(baseDir, 'node_modules/guide4you-builder/openlayersChunk.js') ]
+    'g4u': [ 'babel-polyfill' ]
   },
   target: 'web',
-  context: baseDir,
   resolveLoader: {
     alias: {
       'mustache-eval-loader': path.join(baseDir, 'node_modules/guide4you-builder/mustache-eval-loader'),
@@ -22,46 +19,51 @@ module.exports = {
     }
   },
   resolve: {
-    root: baseDir,
-    alias: {
-      jquery: path.join(baseDir, 'node_modules/jquery/dist/jquery.min')
-    }
+    modules: [
+      baseDir,
+      'node_modules'
+    ],
+    extensions: ['.js']
   },
   module: {
-    loaders: [
+    rules: [
       {
-        loader: 'babel-loader',
         test: /\.js$/,
         exclude: /(node_modules.(?!guide4you))/,
-        query: {
-          presets: [ 'es2015-ie' ],
-          plugins: [ 'transform-runtime' ]
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [ 'env' ]
+          }
         }
       },
       {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader', {
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            'css-loader',
+            'less-loader'
+          ],
           publicPath: '../'
         })
       }
     ],
     noParse: [
-      /.*\\ol(-debug)?\.js/,
-      /.*\/ol(-debug)?\.js/,
-      /.*\\jquery\.min\.js/,
-      /.*\/jquery\.min\.js/,
       /proj4\.js$/
     ]
   },
+  output: {
+    library: 'g4u',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
+  },
+  externals: {
+    'openlayers': 'ol',
+    'jquery': 'jQuery'
+  },
   plugins: [
-    new webpack.NoErrorsPlugin(),
-    new DedupeByRefPlugin(),
-    new GatherPolyfillsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: [ 'lib/g4u.js', 'lib/ol.js' ]
-    }),
-    new DedupCSSPlugin({
-      override: true
-    })
+    new webpack.NoEmitOnErrorsPlugin(),
+    new GatherPolyfillsPlugin()
   ]
 }

@@ -2,13 +2,12 @@
 
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
-const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const LicenseBannerPlugin = require('./license-banner-plugin')
 
 let commonConf = require('./webpack.common.js')
 
-const baseDir = process.cwd()
+// const baseDir = process.cwd()
 
 const legalTemplate = '{{#license}}{{#author}}{{{author}}}, {{/author}}' +
   'License: {{license}} (https://spdx.org/licenses/{{license}}.html){{/license}}' +
@@ -33,15 +32,12 @@ if (g4uPackageInfo.name !== 'guide4you') {
 
 const g4uVersion = g4uPackageInfo.version
 
-module.exports = webpackMerge(commonConf, {
-  resolve: {
-    alias: {
-      openlayers: path.join(baseDir, 'node_modules/openlayers/dist/ol')
-    }
-  },
+module.exports = webpackMerge.smart(commonConf, {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
-    new ExtractTextPlugin('css/g4u.css'),
+    new ExtractTextPlugin({
+      filename: 'css/g4u.css'
+    }),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
         screw_ie8: true
@@ -66,12 +62,8 @@ module.exports = webpackMerge(commonConf, {
       recursiveInclude: /.*guide4you.*/
     })
   ],
-  mustacheEvalLoader: {
-    name: '[path][name].[ext]'
-  },
   output: {
-    filename: '[name]',
-    chunkFilename: '[name]'
+    filename: 'lib/g4u.js'
   },
   stats: {
     colors: true,

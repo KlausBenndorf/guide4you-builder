@@ -19,7 +19,8 @@ module.exports = class GatherPolyfillsPlugin {
         for (let key of [ 'request', 'userRequest', 'resource' ]) {
           if (result[ key ] && result[ key ].match(/polyfill!/)) {
             polyfillValues = _.union(polyfillValues, result[ key ].split('!')[ 1 ].split(','))
-            result[ 'request' ] = 'ignore!'
+            result[ 'request' ] = 'ignore-loader!'
+            result[ key ] = 'ignore-loader!'
           }
         }
 
@@ -29,8 +30,8 @@ module.exports = class GatherPolyfillsPlugin {
 
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (htmlPluginData, callback) => {
-        let polyAddress = this.address + polyfillValues.join(',')
-        htmlPluginData.assets.js.push(polyAddress)
+        let polyAddress = this.address + polyfillValues.join(',') + '&flags=gated'
+        htmlPluginData.assets.js.unshift(polyAddress)
         callback(null, htmlPluginData)
       })
     })

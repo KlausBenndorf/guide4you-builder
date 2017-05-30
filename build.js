@@ -19,7 +19,8 @@ let args = getopt.create([
   [ 'm', 'mode=', 'The mode of the application. Either "dev" or "prod".' ],
   [ 'c', 'conf=', 'The config directory.' ],
   [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
-  [ 'd', 'debug', 'Debug mode. No uglification.' ]
+  [ 'd', 'debug', 'Debug mode. No uglification.' ],
+  [ 'h', 'host=', 'The host to use. Defaults to localhost.' ]
 ])
   .bindHelp()
   .parseSystem()
@@ -51,7 +52,11 @@ if (args.options.mode === 'dev') {
   // choose dev config wherever possible
   buildConf = selectConfig(buildConf, 'dev')
   // merge with base dev config
-  buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.dev.js'))
+  buildConf = webpackMerge.smart(buildConf, require('guide4you-builder/webpack.dev.js'))
+
+  let mustacheEvalLoader = require('./mustache-eval-loader')
+  mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'dev'))
+
   // take out the devServer config
   let serverConf = buildConf.devServer
   delete buildConf.devServer
@@ -60,17 +65,24 @@ if (args.options.mode === 'dev') {
   // take port out of arguments
   let port = parseInt(args.options.port) || 8080
   // set proper public path
-  buildConf.output.publicPath = `http://localhost:${port}/`
+  let host = args.options.host || 'localhost'
+  buildConf.output.publicPath = `http://${host}:${port}/`
   // compile
   let compiler = webpack(buildConf)
   // start server
   let server = new WebpackDevServer(compiler, serverConf)
   server.listen(port)
+  console.log(`Starting server on http://${host}:${port}/`)
 } else if (args.options.mode === 'prod') {
   // choose prod config wherever possible
   buildConf = selectConfig(buildConf, 'prod')
+
   // merge with base prod config
-  buildConf = webpackMerge(buildConf, require('guide4you-builder/webpack.prod.js'))
+  buildConf = webpackMerge.smart(buildConf, require('guide4you-builder/webpack.prod.js'))
+
+  let mustacheEvalLoader = require('./mustache-eval-loader')
+  mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'prod'))
+
   if (args.options.hasOwnProperty('debug')) {
     let index
     for (let i = 0; i < buildConf.plugins.length; i++) {
@@ -88,6 +100,61 @@ if (args.options.mode === 'dev') {
   }
   // compile
   let compiler = webpack(buildConf)
+  compiler.run((err, stats) => {
+    if (err) {
+      console.log('Error : ' + err.message)
+    }
+    if (stats) {
+      let jsonStats = stats.toJson()
+      if (jsonStats.warnings.length > 0) {
+        console.log('warnings:')
+        console.log(jsonStats.warnings)
+      }
+      if (jsonStats.errors.length > 0) {
+        console.log('errors:')
+        console.log(jsonStats.errors)
+      }
+    }
+  })
+} else if (args.options.mode === 'dist') {
+  // choose prod config wherever possible
+  buildConf = selectConfig(buildConf, 'prod')
+
+  // merge with base library config
+  let buildConf1 = webpackMerge.smart(buildConf, require('guide4you-builder/webpack.debug.js'))
+  buildConf1.output.filename = buildConf1.output.filename.replace('lib/', '')
+
+  // merge with base library config
+  let buildConf2 = webpackMerge.smart(buildConf, require('guide4you-builder/webpack.prod.js'))
+  buildConf2.output.filename = buildConf2.output.filename.replace('lib/', '')
+
+  let mustacheEvalLoader = require('./mustache-eval-loader')
+  mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'prod'))
+
+  if (!buildConf.output.merge) {
+    // delete old build
+    rimraf.sync(buildConf.output.path)
+  }
+  // compile
+  let compiler = webpack(buildConf1)
+  compiler.run((err, stats) => {
+    if (err) {
+      console.log('Error : ' + err.message)
+    }
+    if (stats) {
+      let jsonStats = stats.toJson()
+      if (jsonStats.warnings.length > 0) {
+        console.log('warnings:')
+        console.log(jsonStats.warnings)
+      }
+      if (jsonStats.errors.length > 0) {
+        console.log('errors:')
+        console.log(jsonStats.errors)
+      }
+    }
+  })
+
+  compiler = webpack(buildConf2)
   compiler.run((err, stats) => {
     if (err) {
       console.log('Error : ' + err.message)

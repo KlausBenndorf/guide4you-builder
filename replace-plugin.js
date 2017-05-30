@@ -8,6 +8,7 @@ module.exports = class ReplacePlugin {
   }
 
   apply (compiler) {
+    console.log('replace plugin')
     compiler.plugin('compilation', compilation => {
       compilation.plugin('optimize-chunk-assets', (chunks, callback) => {
         for (let chunk of chunks) {
