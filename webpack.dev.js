@@ -29,14 +29,13 @@ module.exports = webpackMerge.smart(commonConf, {
     })
   ],
   output: {
-    filename: 'lib/g4u-[hash].js'
+    filename: 'js/g4u-[hash].js'
   },
   devServer: {
     quiet: false,
     noInfo: false,
     watchOptions: {
-      aggregateTimeout: 300,
-      poll: 1000
+      aggregateTimeout: 300
     },
     publicPath: '/',
     inline: true,
