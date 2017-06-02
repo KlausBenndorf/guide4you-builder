@@ -1,7 +1,5 @@
 'use strict'
 
-const webpack = require('webpack')
-
 module.exports = {
   target: 'node',
   externals: function (context, request, callback) {

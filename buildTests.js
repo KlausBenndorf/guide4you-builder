@@ -22,7 +22,6 @@ mkdirp.sync(outputDir)
 let baseWConf = require('./webpack.test')
 
 for (let file of fs.readdirSync(inputDir).filter(f => f.match(mask))) {
-
   let wConf = webpackMerge.smart(baseWConf, {
     entry: {
       [file]: path.join(inputDir, file)
