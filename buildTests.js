@@ -8,6 +8,7 @@ let rimraf = require('rimraf')
 let mkdirp = require('mkdirp')
 
 let webpack = require('webpack')
+const webpackMerge = require('webpack-merge')
 
 let baseDir = process.cwd()
 let inputDir = path.join(baseDir, 'tests')
@@ -18,57 +19,31 @@ let mask = /.*_spec\.js$/
 rimraf.sync(outputDir)
 mkdirp.sync(outputDir)
 
-let testDirs = ['selenium', 'unit-tests']
+let baseWConf = require('./webpack.test')
 
-for (let testDir of testDirs) {
-  testDir = path.join(inputDir, testDir)
-  if (fs.existsSync(testDir)) {
-    for (let file of fs.readdirSync(testDir).filter(f => f.match(mask))) {
-      let webpackConfig = {
-        entry: {
-          [file]: path.join(testDir, file)
-        },
-        target: 'node',
-        externals: function (context, request, callback) {
-          if (!request.match(/(guide4you)|(^\.)/)) {
-            callback(null, 'commonjs ' + request)
-          } else {
-            callback(null, false)
-          }
-        },
-        module: {
-          loaders: [
-            {
-              loader: 'babel-loader',
-              test: /\.js$/,
-              exclude: /node_modules.(?!guide4you)/,
-              query: {
-                presets: 'es2015'
-              }
-            }
-          ]
-        },
-        output: {
-          filename: '[name]',
-          path: outputDir
-        }
-      }
-
-      webpack(webpackConfig, function (err, stats) {
-        if (err) {
-          console.log('Error : ' + err.message)
-        } else if (stats) {
-          let jsonStats = stats.toJson()
-          if (jsonStats.warnings.length > 0) {
-            console.log('warnings:')
-            console.log(jsonStats.warnings)
-          }
-          if (jsonStats.errors.length > 0) {
-            console.log('errors:')
-            console.log(jsonStats.errors)
-          }
-        }
-      })
+for (let file of fs.readdirSync(inputDir).filter(f => f.match(mask))) {
+  let wConf = webpackMerge.smart(baseWConf, {
+    entry: {
+      [file]: path.join(inputDir, file)
+    },
+    output: {
+      path: outputDir
     }
-  }
+  })
+
+  webpack(wConf, function (err, stats) {
+    if (err) {
+      console.log('Error : ' + err.message)
+    } else if (stats) {
+      let jsonStats = stats.toJson()
+      if (jsonStats.warnings.length > 0) {
+        console.log('warnings:')
+        console.log(jsonStats.warnings)
+      }
+      if (jsonStats.errors.length > 0) {
+        console.log('errors:')
+        console.log(jsonStats.errors)
+      }
+    }
+  })
 }
