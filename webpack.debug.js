@@ -24,6 +24,6 @@ module.exports = webpackMerge.smart(commonConf, {
     })
   ],
   output: {
-    filename: 'lib/g4u-debug.js'
+    filename: 'js/g4u-debug.js'
   }
 })

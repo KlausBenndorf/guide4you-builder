@@ -8,10 +8,10 @@ const GatherPolyfillsPlugin = require('./gather-polyfills-plugin')
 const baseDir = process.cwd()
 
 module.exports = {
+  target: 'web',
   entry: {
     'g4u': [ 'babel-polyfill' ]
   },
-  target: 'web',
   resolveLoader: {
     alias: {
       'mustache-eval-loader': path.join(baseDir, 'node_modules/guide4you-builder/mustache-eval-loader'),
@@ -59,8 +59,18 @@ module.exports = {
     umdNamedDefine: true
   },
   externals: {
-    'openlayers': 'ol',
-    'jquery': 'jQuery'
+    'openlayers': {
+      commonjs: 'ol',
+      commonjs2: 'ol',
+      amd: 'ol',
+      root: 'ol'
+    },
+    'jquery': {
+      commonjs: 'jQuery',
+      commonjs2: 'jQuery',
+      amd: 'jQuery',
+      root: 'jQuery'
+    }
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),

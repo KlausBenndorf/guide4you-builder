@@ -63,7 +63,7 @@ module.exports = webpackMerge.smart(commonConf, {
     })
   ],
   output: {
-    filename: 'lib/g4u.js'
+    filename: 'js/g4u.js'
   },
   stats: {
     colors: true,
