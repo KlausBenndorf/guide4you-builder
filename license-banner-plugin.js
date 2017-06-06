@@ -38,14 +38,15 @@ module.exports = class LicenseBannerPlugin {
   }
 
   parsePackageInfo (packageInfo, dependencies = []) {
-    for (let dependency of Object.keys(packageInfo.dependencies)) {
-      if (!dependencies.some(d => d.name === dependency)) {
-        let childPackageInfo = this.adjustPackageInfo(
-          require(path.join(this.basePath, 'node_modules', dependency, 'package.json')))
-
-        dependencies.push(childPackageInfo)
-        if (this.recursiveInclude && dependency.match(this.recursiveInclude)) {
-          this.parsePackageInfo(childPackageInfo, dependencies)
+    if (packageInfo.dependencies !== undefined) {
+      for (let dependency of Object.keys(packageInfo.dependencies)) {
+        if (!dependencies.some(d => d.name === dependency)) {
+          let childPackageInfo = this.adjustPackageInfo(
+            require(path.join(this.basePath, 'node_modules', dependency, 'package.json')))
+          dependencies.push(childPackageInfo)
+          if (this.recursiveInclude && dependency.match(this.recursiveInclude)) {
+            this.parsePackageInfo(childPackageInfo, dependencies)
+          }
         }
       }
     }
