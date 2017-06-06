@@ -10,6 +10,8 @@ const fs = require('fs')
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 const devProxyConfig = require('./devProxyConfig')
 const selectConfig = require('./selectConfig')
 
@@ -123,6 +125,7 @@ if (args.options.mode === 'dev') {
 
   // merge with base library config
   let buildConf1 = webpackMerge.smart(require('guide4you-builder/webpack.debug.js'), buildConf)
+  buildConf1.plugins.splice(buildConf1.plugins.findIndex(p => p instanceof HtmlWebpackPlugin), 1)
 
   // merge with base library config
   let buildConf2 = webpackMerge.smart(require('guide4you-builder/webpack.prod.js'), buildConf)
