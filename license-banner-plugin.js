@@ -2,6 +2,7 @@ const ConcatSource = require('webpack-sources').ConcatSource
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers')
 const Mustache = require('mustache')
 const path = require('path')
+const fs = require('fs')
 
 function wrapComment (str) {
   if (str.indexOf('\n') < 0) {
@@ -12,6 +13,8 @@ function wrapComment (str) {
 
 module.exports = class LicenseBannerPlugin {
   constructor (options) {
+    console.log(__dirname)
+
     if (arguments.length > 1) {
       throw new Error('LicenseBannerPlugin only takes one argument (pass an options object)')
     }
@@ -37,15 +40,25 @@ module.exports = class LicenseBannerPlugin {
     return packageInfo
   }
 
-  parsePackageInfo (packageInfo, dependencies = []) {
+  findPackageJson (packagePath, packageName) {
+    let possiblePath = path.join(packagePath, 'node_modules', packageName, 'package.json')
+    if (fs.existsSync(path.join(__dirname, possiblePath))) {
+      return require(possiblePath)
+    } else if (packagePath !== this.basePath) {
+      return this.findPackageJson(path.join(packagePath, '../../'), packageName)
+    } else {
+      throw new Error(`Package not found. Name: ${packageName}.`)
+    }
+  }
+
+  parsePackageInfo (packageInfo, packagePath, dependencies = []) {
     if (packageInfo.dependencies !== undefined) {
       for (let dependency of Object.keys(packageInfo.dependencies)) {
         if (!dependencies.some(d => d.name === dependency)) {
-          let childPackageInfo = this.adjustPackageInfo(
-            require(path.join(this.basePath, 'node_modules', dependency, 'package.json')))
+          let childPackageInfo = this.adjustPackageInfo(this.findPackageJson(packagePath, dependency))
           dependencies.push(childPackageInfo)
           if (this.recursiveInclude && dependency.match(this.recursiveInclude)) {
-            this.parsePackageInfo(childPackageInfo, dependencies)
+            this.parsePackageInfo(childPackageInfo, path.join(packagePath, 'node_modules', dependency), dependencies)
           }
         }
       }
@@ -61,7 +74,7 @@ module.exports = class LicenseBannerPlugin {
     let templateData = this.adjustPackageInfo(require(path.join(this.basePath, 'package.json')))
 
     let dependencies = [this.adjustPackageInfo(require('webpack/package.json'))]
-    this.parsePackageInfo(templateData, dependencies)
+    this.parsePackageInfo(templateData, this.basePath, dependencies)
     templateData.dependencies = dependencies
       .filter(dep => !compiler.options.externals.hasOwnProperty(dep.name))
       .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1)
