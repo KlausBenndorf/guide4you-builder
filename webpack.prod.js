@@ -60,6 +60,10 @@ module.exports = webpackMerge.smart(commonConf, {
         date: (new Date()).toDateString()
       },
       recursiveInclude: /.*guide4you.*/
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false
     })
   ],
   output: {

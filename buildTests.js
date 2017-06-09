@@ -2,19 +2,19 @@
 
 'use strict'
 
-let fs = require('fs')
-let path = require('path')
-let rimraf = require('rimraf')
-let mkdirp = require('mkdirp')
+const fs = require('fs')
+const path = require('path')
+const rimraf = require('rimraf')
+const mkdirp = require('mkdirp')
 
-let webpack = require('webpack')
+const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
 
-let baseDir = process.cwd()
-let inputDir = path.join(baseDir, 'tests')
-let outputDir = path.join(baseDir, 'build/tests')
+const baseDir = process.cwd()
+const inputDir = path.join(baseDir, 'tests')
+const outputDir = path.join(baseDir, 'build/tests')
 
-let mask = /.*_spec\.js$/
+const mask = /.*_spec\.js$/
 
 rimraf.sync(outputDir)
 mkdirp.sync(outputDir)

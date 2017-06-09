@@ -10,6 +10,8 @@ const fs = require('fs')
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 const devProxyConfig = require('./devProxyConfig')
 const selectConfig = require('./selectConfig')
 
@@ -68,10 +70,8 @@ if (args.options.mode === 'dev') {
   // set proper public path
   let host = args.options.host || 'localhost'
   buildConf.output.publicPath = `http://${host}:${port}/`
-  // compile
-  let compiler = webpack(buildConf)
   // start server
-  let server = new WebpackDevServer(compiler, serverConf)
+  let server = new WebpackDevServer(webpack(buildConf), serverConf)
   server.listen(port)
   console.log(`Starting server on http://${host}:${port}/`)
 } else if (args.options.mode === 'prod') {
@@ -100,29 +100,30 @@ if (args.options.mode === 'dev') {
     rimraf.sync(buildConf.output.path)
   }
   // compile
-  let compiler = webpack(buildConf)
-  compiler.run((err, stats) => {
-    if (err) {
-      console.log('Error : ' + err.message)
-    }
-    if (stats) {
-      let jsonStats = stats.toJson()
-      if (jsonStats.warnings.length > 0) {
-        console.log('warnings:')
-        console.log(jsonStats.warnings)
+  webpack(buildConf)
+    .run((err, stats) => {
+      if (err) {
+        console.log('Error : ' + err.message)
       }
-      if (jsonStats.errors.length > 0) {
-        console.log('errors:')
-        console.log(jsonStats.errors)
+      if (stats) {
+        let jsonStats = stats.toJson()
+        if (jsonStats.warnings.length > 0) {
+          console.log('warnings:')
+          console.log(jsonStats.warnings)
+        }
+        if (jsonStats.errors.length > 0) {
+          console.log('errors:')
+          console.log(jsonStats.errors)
+        }
       }
-    }
-  })
+    })
 } else if (args.options.mode === 'dist') {
   // choose prod config wherever possible
   buildConf = selectConfig(buildConf, 'prod')
 
   // merge with base library config
   let buildConf1 = webpackMerge.smart(require('guide4you-builder/webpack.debug.js'), buildConf)
+  buildConf1.plugins.splice(buildConf1.plugins.findIndex(p => p instanceof HtmlWebpackPlugin), 1)
 
   // merge with base library config
   let buildConf2 = webpackMerge.smart(require('guide4you-builder/webpack.prod.js'), buildConf)
@@ -135,39 +136,21 @@ if (args.options.mode === 'dev') {
     rimraf.sync(buildConf.output.path)
   }
   // compile
-  let compiler = webpack(buildConf1)
-  compiler.run((err, stats) => {
-    if (err) {
-      console.log('Error : ' + err.message)
-    }
-    if (stats) {
-      let jsonStats = stats.toJson()
-      if (jsonStats.warnings.length > 0) {
-        console.log('warnings:')
-        console.log(jsonStats.warnings)
+  webpack([buildConf1, buildConf2])
+    .run((err, stats) => {
+      if (err) {
+        console.log('Error : ' + err.message)
       }
-      if (jsonStats.errors.length > 0) {
-        console.log('errors:')
-        console.log(jsonStats.errors)
+      if (stats) {
+        let jsonStats = stats.toJson()
+        if (jsonStats.warnings.length > 0) {
+          console.log('warnings:')
+          console.log(jsonStats.warnings)
+        }
+        if (jsonStats.errors.length > 0) {
+          console.log('errors:')
+          console.log(jsonStats.errors)
+        }
       }
-    }
-  })
-
-  compiler = webpack(buildConf2)
-  compiler.run((err, stats) => {
-    if (err) {
-      console.log('Error : ' + err.message)
-    }
-    if (stats) {
-      let jsonStats = stats.toJson()
-      if (jsonStats.warnings.length > 0) {
-        console.log('warnings:')
-        console.log(jsonStats.warnings)
-      }
-      if (jsonStats.errors.length > 0) {
-        console.log('errors:')
-        console.log(jsonStats.errors)
-      }
-    }
-  })
+    })
 }
