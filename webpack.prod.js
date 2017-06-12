@@ -59,7 +59,8 @@ module.exports = webpackMerge.smart(commonConf, {
       additionalData: {
         date: (new Date()).toDateString()
       },
-      recursiveInclude: /.*guide4you.*/
+      recursiveInclude: /.*guide4you.*/,
+      parsePeerDependencies: true
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
