@@ -58,6 +58,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint"
+    "test": "npm run lint",
+    "version": "npm run test || git checkout ."
   }
 }
