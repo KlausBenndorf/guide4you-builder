@@ -36,7 +36,7 @@ module.exports = webpackMerge.smart(commonConf, {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin({
-      filename: 'css/g4u.css'
+      filename: 'css/[name].css'
     }),
     new webpack.optimize.UglifyJsPlugin({
       mangle: {
@@ -59,7 +59,8 @@ module.exports = webpackMerge.smart(commonConf, {
       additionalData: {
         date: (new Date()).toDateString()
       },
-      recursiveInclude: /.*guide4you.*/
+      recursiveInclude: /.*guide4you.*/,
+      parsePeerDependencies: true
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
@@ -67,7 +68,7 @@ module.exports = webpackMerge.smart(commonConf, {
     })
   ],
   output: {
-    filename: 'js/g4u.js'
+    filename: 'js/[name].js'
   },
   stats: {
     colors: true,

@@ -1,6 +1,6 @@
 {
   "name": "guide4you-builder",
-  "version": "2.0.7",
+  "version": "2.0.10",
   "description": "A builder for Guide4You.",
   "keywords": [
     "tool",
@@ -58,6 +58,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint"
+    "test": "npm run lint",
+    "version": "npm run test || git checkout ."
   }
 }

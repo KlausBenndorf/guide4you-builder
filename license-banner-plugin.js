@@ -27,6 +27,7 @@ module.exports = class LicenseBannerPlugin {
     this.bannerTemplate = this.options.raw ? options.bannerTemplate : wrapComment(options.bannerTemplate)
     this.recursiveInclude = options.recursiveInclude
     this.basePath = options.basePath || '../../'
+    this.parsePeerDependencies = options.parsePeerDependencies
   }
 
   adjustPackageInfo (packageInfo) {
@@ -51,19 +52,24 @@ module.exports = class LicenseBannerPlugin {
     }
   }
 
-  parsePackageInfo (packageInfo, packagePath, dependencies = []) {
-    if (packageInfo.dependencies !== undefined) {
-      for (let dependency of Object.keys(packageInfo.dependencies)) {
-        if (!dependencies.some(d => d.name === dependency)) {
-          let childPackageInfo = this.adjustPackageInfo(this.findPackageJson(packagePath, dependency))
-          dependencies.push(childPackageInfo)
-          if (this.recursiveInclude && dependency.match(this.recursiveInclude)) {
-            this.parsePackageInfo(childPackageInfo, path.join(packagePath, 'node_modules', dependency), dependencies)
-          }
+  parsePackageInfo (packageInfo, packagePath, allDependencies = []) {
+    let packageDependencies = packageInfo.dependencies ? packageInfo.dependencies : {}
+
+    if (this.parsePeerDependencies && packageInfo.peerDependencies) {
+      Object.assign(packageDependencies, packageInfo.peerDependencies)
+    }
+
+    for (let dependency of Object.keys(packageDependencies)) {
+      if (!allDependencies.some(d => d.name === dependency)) {
+        let childPackageInfo = this.adjustPackageInfo(this.findPackageJson(packagePath, dependency))
+        allDependencies.push(childPackageInfo)
+        if (this.recursiveInclude && dependency.match(this.recursiveInclude)) {
+          this.parsePackageInfo(childPackageInfo, path.join(packagePath, 'node_modules', dependency), allDependencies)
         }
       }
     }
-    return dependencies
+
+    return allDependencies
   }
 
   apply (compiler) {

@@ -22,14 +22,14 @@ module.exports = webpackMerge.smart(commonConf, {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin({
-      filename: 'css/g4u.[hash].css'
+      filename: 'css/[name]-[hash].css'
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map'
     })
   ],
   output: {
-    filename: 'js/g4u-[hash].js'
+    filename: 'js/[name]-[hash].js'
   },
   devServer: {
     quiet: false,

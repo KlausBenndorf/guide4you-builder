@@ -20,10 +20,10 @@ module.exports = webpackMerge.smart(commonConf, {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin({
-      filename: 'css/g4u-debug.css'
+      filename: 'css/[name]-debug.css'
     })
   ],
   output: {
-    filename: 'js/g4u-debug.js'
+    filename: 'js/[name]-debug.js'
   }
 })

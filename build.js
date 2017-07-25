@@ -60,6 +60,10 @@ if (args.options.mode === 'dev') {
   let mustacheEvalLoader = require('./mustache-eval-loader')
   mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'dev'))
 
+  if (buildConf.output.merge) {
+    delete buildConf.output.merge
+  }
+
   // take out the devServer config
   let serverConf = buildConf.devServer
   delete buildConf.devServer
@@ -98,6 +102,8 @@ if (args.options.mode === 'dev') {
   if (!buildConf.output.merge) {
     // delete old build
     rimraf.sync(buildConf.output.path)
+  } else {
+    delete buildConf.output.merge
   }
   // compile
   webpack(buildConf)
