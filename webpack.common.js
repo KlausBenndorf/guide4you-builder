@@ -14,6 +14,7 @@ module.exports = {
   },
   resolveLoader: {
     alias: {
+      'mustache-loader': path.join(baseDir, 'node_modules/guide4you-builder/mustache-loader'),
       'mustache-eval-loader': path.join(baseDir, 'node_modules/guide4you-builder/mustache-eval-loader'),
       'tojson-file-loader': path.join(baseDir, 'node_modules/guide4you-builder/tojson-file-loader')
     }

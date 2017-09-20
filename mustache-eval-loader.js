@@ -1,11 +1,15 @@
 var Mustache = require('mustache')
 var loaderUtils = require('loader-utils')
 
-let templateVars
+var mustacheLoader = require('./mustache-loader')
+
+let templateVars = mustacheLoader.getTemplateVars()
 
 module.exports = function (content) {
   this.cacheable(false)
   if (!this.emitFile) throw new Error('emitFile is required from module system')
+
+  console.warn('mustache-eval-loader is considered deprecated. Use file-loader!mustache-loader instead.')
 
   var options = loaderUtils.getOptions(this)
 
@@ -42,9 +46,12 @@ module.exports = function (content) {
 }
 
 module.exports.setTemplateVars = function (tVars) {
-  templateVars = tVars
+  console.warn('mustache-eval-loader#setTemplateVars is considered deprecated.' +
+    'Use mustache-loader#setTemplateVars instead.')
+
+  mustacheLoader.setTemplateVars(tVars)
 }
 
 module.exports.getTemplateVars = function () {
-  return templateVars
+  return mustacheLoader.getTemplateVars()
 }

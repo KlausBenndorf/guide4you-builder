@@ -1,5 +1,5 @@
 module.exports = function (webpackConfig) {
-  let templateVars = require('./mustache-eval-loader').getTemplateVars()
+  let templateVars = require('./mustache-loader').getTemplateVars()
   let proxyUrl = templateVars.ajaxProxy
   let validRequests = templateVars.proxyValidRequests
   let proxyConfig = {}

@@ -17,6 +17,8 @@ const selectConfig = require('./selectConfig')
 
 const webpackMerge = require('webpack-merge')
 
+const mustacheLoader = require('./mustache-loader')
+
 let args = getopt.create([
   [ 'm', 'mode=', 'The mode of the application. Either "dev" or "prod".' ],
   [ 'c', 'conf=', 'The config directory.' ],
@@ -57,8 +59,7 @@ if (args.options.mode === 'dev') {
   buildConf = webpackMerge.smart(require('guide4you-builder/webpack.dev.js'), buildConf)
 
   // select mustach vars
-  let mustacheEvalLoader = require('./mustache-eval-loader')
-  mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'dev'))
+  mustacheLoader.setTemplateVars(selectConfig(mustacheLoader.getTemplateVars(), 'dev'))
 
   if (buildConf.output.merge) {
     delete buildConf.output.merge
@@ -85,8 +86,7 @@ if (args.options.mode === 'dev') {
   // merge with base prod config
   buildConf = webpackMerge.smart(require('guide4you-builder/webpack.prod.js'), buildConf)
 
-  let mustacheEvalLoader = require('./mustache-eval-loader')
-  mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'prod'))
+  mustacheLoader.setTemplateVars(selectConfig(mustacheLoader.getTemplateVars(), 'prod'))
 
   if (args.options.hasOwnProperty('debug')) {
     let index
@@ -134,8 +134,7 @@ if (args.options.mode === 'dev') {
   // merge with base library config
   let buildConf2 = webpackMerge.smart(require('guide4you-builder/webpack.prod.js'), buildConf)
 
-  let mustacheEvalLoader = require('./mustache-eval-loader')
-  mustacheEvalLoader.setTemplateVars(selectConfig(mustacheEvalLoader.getTemplateVars(), 'prod'))
+  mustacheLoader.setTemplateVars(selectConfig(mustacheLoader.getTemplateVars(), 'prod'))
 
   if (!buildConf.output.merge) {
     // delete old build
