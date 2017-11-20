@@ -101,7 +101,7 @@ if (args.options.mode === 'dev') {
   }
   if (!buildConf.output.merge) {
     // delete old build
-    rimraf.sync(buildConf.output.path)
+    rimraf.sync(path.join(buildConf.output.path, '**/!(.git)'))
   } else {
     delete buildConf.output.merge
   }
