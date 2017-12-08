@@ -54,9 +54,22 @@ try {
   }
 }
 
-let progress = new ProgressPlugin(function (perc, msg) {
-  console.log((perc * 100) + '%', msg)
-})
+let progress = {
+  start: function () {
+    let info = {
+      perc: 0,
+      msg: ''
+    }
+    this.interval = setInterval(() => console.log(info.perc + '%', info.msg), 1000)
+    return new ProgressPlugin(function (perc, msg) {
+      info.perc = perc * 100
+      info.msg = msg
+    })
+  },
+  stop: function () {
+    clearInterval(this.interval)
+  }
+}
 
 let buildConf = require(webpackConfigPath)
 
@@ -134,8 +147,9 @@ if (args.options.mode === 'dev') {
 
   // compile
   let compiler = webpack(buildConf)
-  compiler.apply(progress)
+  compiler.apply(progress.start())
   compiler.run((err, stats) => {
+    progress.stop()
     if (err) {
       console.error(err.stack || err)
       if (err.details) {
@@ -186,8 +200,9 @@ if (args.options.mode === 'dev') {
 
   // compile
   let compiler = webpack([buildConf1, buildConf2])
-  compiler.apply(progress)
+  compiler.apply(progress.start())
   compiler.run((err, stats) => {
+    progress.stop()
     if (err) {
       console.error(err.stack || err)
       if (err.details) {
