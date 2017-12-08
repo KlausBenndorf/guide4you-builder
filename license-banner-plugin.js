@@ -26,7 +26,7 @@ module.exports = class LicenseBannerPlugin {
     this.options = options || {}
     this.bannerTemplate = this.options.raw ? options.bannerTemplate : wrapComment(options.bannerTemplate)
     this.recursiveInclude = options.recursiveInclude
-    this.basePath = options.basePath || '../../'
+    this.basePath = options.basePath || path.normalize('../../')
     this.parsePeerDependencies = options.parsePeerDependencies
   }
 
