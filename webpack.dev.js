@@ -39,9 +39,6 @@ module.exports = webpackMerge.smart(commonConf, {
     },
     publicPath: '/',
     inline: true,
-    stats: {
-      colors: true,
-      chunks: false
-    }
+    stats: 'normal'
   }
 })
