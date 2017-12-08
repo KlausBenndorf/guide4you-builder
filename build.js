@@ -9,6 +9,7 @@ const fs = require('fs')
 
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
+const ProgressPlugin = require('webpack/lib/ProgressPlugin')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
@@ -24,7 +25,8 @@ let args = getopt.create([
   [ 'c', 'conf=', 'The config directory.' ],
   [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
   [ 'd', 'debug', 'Debug mode. No uglification.' ],
-  [ 'h', 'host=', 'The host to use. Defaults to localhost.' ]
+  [ 'h', 'host=', 'The host to use. Defaults to localhost.' ],
+  [ 'v', 'verbose' ]
 ])
   .bindHelp()
   .parseSystem()
@@ -36,6 +38,8 @@ if (!args.options.hasOwnProperty('mode')) {
 if (!args.options.hasOwnProperty('conf')) {
   throw new Error('Option "conf" is required.')
 }
+
+let verbose = args.options.verbose
 
 const baseDir = process.cwd()
 const configPath = path.join(baseDir, args.options.conf)
@@ -50,9 +54,15 @@ try {
   }
 }
 
+let progress = new ProgressPlugin(function (perc, msg) {
+  console.log((perc * 100) + '%', msg)
+})
+
 let buildConf = require(webpackConfigPath)
 
 if (args.options.mode === 'dev') {
+  // ---------------------------- dev ----------------------------
+
   // choose dev config wherever possible
   buildConf = selectConfig(buildConf, 'dev')
   // merge with base dev config
@@ -75,11 +85,21 @@ if (args.options.mode === 'dev') {
   // set proper public path
   let host = args.options.host || 'localhost'
   buildConf.output.publicPath = `http://${host}:${port}/`
+
+  if (verbose) {
+    buildConf.devServer.stats = 'verbose'
+    console.log('build conf:')
+    console.log(JSON.stringify(buildConf, null, 2))
+    console.log('starting compile')
+  }
+
   // start server
   let server = new WebpackDevServer(webpack(buildConf), serverConf)
   server.listen(port)
   console.log(`Starting server on http://${host}:${port}/`)
 } else if (args.options.mode === 'prod') {
+  // ---------------------------- prod ----------------------------
+
   // choose prod config wherever possible
   buildConf = selectConfig(buildConf, 'prod')
 
@@ -105,25 +125,38 @@ if (args.options.mode === 'dev') {
   } else {
     delete buildConf.output.merge
   }
+
+  if (verbose) {
+    console.log('build conf:')
+    console.log(JSON.stringify(buildConf, null, 2))
+    console.log('starting compile')
+  }
+
   // compile
-  webpack(buildConf)
-    .run((err, stats) => {
-      if (err) {
-        console.log('Error : ' + err.message)
+  let compiler = webpack(buildConf)
+  compiler.apply(progress)
+  compiler.run((err, stats) => {
+    if (err) {
+      console.error(err.stack || err)
+      if (err.details) {
+        console.error(err.details)
       }
-      if (stats) {
-        let jsonStats = stats.toJson()
-        if (jsonStats.warnings.length > 0) {
-          console.log('warnings:')
-          console.log(jsonStats.warnings)
-        }
-        if (jsonStats.errors.length > 0) {
-          console.log('errors:')
-          console.log(jsonStats.errors)
-        }
-      }
-    })
+      return
+    }
+
+    const info = stats.toJson()
+
+    if (stats.hasErrors()) {
+      console.error(info.errors)
+    }
+
+    if (stats.hasWarnings()) {
+      console.warn(info.warnings)
+    }
+  })
 } else if (args.options.mode === 'dist') {
+  // ---------------------------- dist ----------------------------
+
   // choose prod config wherever possible
   buildConf = selectConfig(buildConf, 'prod')
 
@@ -140,22 +173,37 @@ if (args.options.mode === 'dev') {
     // delete old build
     rimraf.sync(buildConf.output.path)
   }
+
+  if (verbose) {
+    buildConf1.stats = 'verbose'
+    buildConf2.stats = 'verbose'
+    console.log('build conf 1:')
+    console.log(JSON.stringify(buildConf1, null, 2))
+    console.log('build conf 2:')
+    console.log(JSON.stringify(buildConf2, null, 2))
+    console.log('starting compile')
+  }
+
   // compile
-  webpack([buildConf1, buildConf2])
-    .run((err, stats) => {
-      if (err) {
-        console.log('Error : ' + err.message)
+  let compiler = webpack([buildConf1, buildConf2])
+  compiler.apply(progress)
+  compiler.run((err, stats) => {
+    if (err) {
+      console.error(err.stack || err)
+      if (err.details) {
+        console.error(err.details)
       }
-      if (stats) {
-        let jsonStats = stats.toJson()
-        if (jsonStats.warnings.length > 0) {
-          console.log('warnings:')
-          console.log(jsonStats.warnings)
-        }
-        if (jsonStats.errors.length > 0) {
-          console.log('errors:')
-          console.log(jsonStats.errors)
-        }
-      }
-    })
+      return
+    }
+
+    const info = stats.toJson()
+
+    if (stats.hasErrors()) {
+      console.error(info.errors)
+    }
+
+    if (stats.hasWarnings()) {
+      console.warn(info.warnings)
+    }
+  })
 }

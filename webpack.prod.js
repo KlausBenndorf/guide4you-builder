@@ -69,9 +69,5 @@ module.exports = webpackMerge.smart(commonConf, {
   ],
   output: {
     filename: 'js/[name].js'
-  },
-  stats: {
-    colors: true,
-    chunks: false
   }
 })
