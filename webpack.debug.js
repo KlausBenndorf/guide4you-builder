@@ -1,10 +1,7 @@
 'use strict'
 
 const webpack = require('webpack')
-const webpackMerge = require('webpack-merge')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-
-const commonConf = require('./webpack.common.js')
 
 let g4uPackageInfo = require('../../package.json')
 
@@ -16,7 +13,7 @@ const g4uVersion = g4uPackageInfo.version
 
 // let baseDir = process.cwd()
 
-module.exports = webpackMerge.smart(commonConf, {
+module.exports = {
   plugins: [
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin({
@@ -26,4 +23,4 @@ module.exports = webpackMerge.smart(commonConf, {
   output: {
     filename: 'js/[name]-debug.js'
   }
-})
+}

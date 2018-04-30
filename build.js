@@ -3,56 +3,55 @@
 'use strict'
 
 const path = require('path')
-const getopt = require('node-getopt')
+const Getopt = require('node-getopt')
 const rimraf = require('rimraf')
 const fs = require('fs')
 
 const webpack = require('webpack')
+const webpackMerge = require('webpack-merge')
 const WebpackDevServer = require('webpack-dev-server')
 const ProgressPlugin = require('webpack/lib/ProgressPlugin')
 
+const devProxyConfig = require('./devProxyConfig')
+
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const devProxyConfig = require('./devProxyConfig')
-const selectConfig = require('./selectConfig')
-
-const webpackMerge = require('webpack-merge')
-
-const mustacheLoader = require('./mustache-loader')
-
-let args = getopt.create([
-  [ 'm', 'mode=', 'The mode of the application. Either "dev" or "prod".' ],
-  [ 'c', 'conf=', 'The config directory.' ],
-  [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
+let getopt = new Getopt([
+  [ 'm', 'mode=', 'The mode of the application. Either "dev" or "prod". Required.' ],
+  [ 'c', 'conf=', 'The config file. Required.' ],
   [ 'd', 'debug', 'Debug mode. No uglification.' ],
+  [ 'p', 'port=', 'The port to use. Defaults to 8080.' ],
   [ 'h', 'host=', 'The host to use. Defaults to localhost.' ],
   [ 'v', 'verbose' ]
 ])
   .bindHelp()
   .parseSystem()
 
-if (!args.options.hasOwnProperty('mode')) {
-  throw new Error('Option "mode" is required.')
+if (!getopt.options.hasOwnProperty('mode')) {
+  getopt.showHelp()
+  process.exit(1)
 }
 
-if (!args.options.hasOwnProperty('conf')) {
-  throw new Error('Option "conf" is required.')
+if (!getopt.options.hasOwnProperty('conf')) {
+  getopt.showHelp()
+  process.exit(1)
 }
 
-let verbose = args.options.verbose
+let verbose = getopt.options.verbose
 
 const baseDir = process.cwd()
-const configPath = path.join(baseDir, args.options.conf)
-const webpackConfigPath = path.join(configPath, 'webpack.js')
+const configPath = path.join(baseDir, getopt.options.conf)
 
 // get the webpack.js file from the folder
 try {
-  fs.accessSync(webpackConfigPath)
+  fs.accessSync(configPath)
 } catch (e) {
   if (e.code === 'ENOENT') {
-    throw new Error('Wrong directory or missing webpack.js file in specified directory.')
+    throw new Error('Wrong filepath to webpack.js.')
   }
 }
+
+let buildConf = require(configPath)
 
 let progress = {
   start: function () {
@@ -71,19 +70,7 @@ let progress = {
   }
 }
 
-let buildConf = require(webpackConfigPath)
-
-if (args.options.mode === 'dev') {
-  // ---------------------------- dev ----------------------------
-
-  // choose dev config wherever possible
-  buildConf = selectConfig(buildConf, 'dev')
-  // merge with base dev config
-  buildConf = webpackMerge.smart(require('guide4you-builder/webpack.dev.js'), buildConf)
-
-  // select mustach vars
-  mustacheLoader.setTemplateVars(selectConfig(mustacheLoader.getTemplateVars(), 'dev'))
-
+if (getopt.options.mode === 'dev') {
   if (buildConf.output.merge) {
     delete buildConf.output.merge
   }
@@ -91,12 +78,13 @@ if (args.options.mode === 'dev') {
   // take out the devServer config
   let serverConf = buildConf.devServer
   delete buildConf.devServer
+
   // configure dev proxy
   serverConf.proxy = devProxyConfig(buildConf)
   // take port out of arguments
-  let port = parseInt(args.options.port) || 8080
+  let port = parseInt(getopt.options.port) || 8080
   // set proper public path
-  let host = args.options.host || 'localhost'
+  let host = getopt.options.host || 'localhost'
   buildConf.output.publicPath = `http://${host}:${port}/`
 
   if (verbose) {
@@ -110,18 +98,10 @@ if (args.options.mode === 'dev') {
   let server = new WebpackDevServer(webpack(buildConf), serverConf)
   server.listen(port)
   console.log(`Starting server on http://${host}:${port}/`)
-} else if (args.options.mode === 'prod') {
+} else if (getopt.options.mode === 'prod') {
   // ---------------------------- prod ----------------------------
 
-  // choose prod config wherever possible
-  buildConf = selectConfig(buildConf, 'prod')
-
-  // merge with base prod config
-  buildConf = webpackMerge.smart(require('guide4you-builder/webpack.prod.js'), buildConf)
-
-  mustacheLoader.setTemplateVars(selectConfig(mustacheLoader.getTemplateVars(), 'prod'))
-
-  if (args.options.hasOwnProperty('debug')) {
+  if (getopt.options.hasOwnProperty('debug')) {
     let index
     for (let i = 0; i < buildConf.plugins.length; i++) {
       if (buildConf.plugins[i] instanceof webpack.optimize.UglifyJsPlugin) {
@@ -168,20 +148,12 @@ if (args.options.mode === 'dev') {
       console.warn(info.warnings)
     }
   })
-} else if (args.options.mode === 'dist') {
+} else if (getopt.options.mode === 'dist') {
   // ---------------------------- dist ----------------------------
 
-  // choose prod config wherever possible
-  buildConf = selectConfig(buildConf, 'prod')
-
   // merge with base library config
-  let buildConf1 = webpackMerge.smart(require('guide4you-builder/webpack.debug.js'), buildConf)
-  buildConf1.plugins.splice(buildConf1.plugins.findIndex(p => p instanceof HtmlWebpackPlugin), 1)
-
-  // merge with base library config
-  let buildConf2 = webpackMerge.smart(require('guide4you-builder/webpack.prod.js'), buildConf)
-
-  mustacheLoader.setTemplateVars(selectConfig(mustacheLoader.getTemplateVars(), 'prod'))
+  let buildDebugConf = webpackMerge.smart(require('guide4you-builder/webpack.debug.js'), buildConf)
+  buildDebugConf.plugins.splice(buildDebugConf.plugins.findIndex(p => p instanceof HtmlWebpackPlugin), 1)
 
   if (!buildConf.output.merge) {
     // delete old build
@@ -189,17 +161,17 @@ if (args.options.mode === 'dev') {
   }
 
   if (verbose) {
-    buildConf1.stats = 'verbose'
-    buildConf2.stats = 'verbose'
+    buildConf.stats = 'verbose'
+    buildDebugConf.stats = 'verbose'
     console.log('build conf 1:')
-    console.log(JSON.stringify(buildConf1, null, 2))
+    console.log(JSON.stringify(buildConf, null, 2))
     console.log('build conf 2:')
-    console.log(JSON.stringify(buildConf2, null, 2))
+    console.log(JSON.stringify(buildDebugConf, null, 2))
     console.log('starting compile')
   }
 
   // compile
-  let compiler = webpack([buildConf1, buildConf2])
+  let compiler = webpack([buildConf, buildDebugConf])
   compiler.apply(progress.start())
   compiler.run((err, stats) => {
     progress.stop()
