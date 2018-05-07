@@ -13,8 +13,6 @@ function wrapComment (str) {
 
 module.exports = class LicenseBannerPlugin {
   constructor (options) {
-    console.log(__dirname)
-
     if (arguments.length > 1) {
       throw new Error('LicenseBannerPlugin only takes one argument (pass an options object)')
     }
@@ -28,6 +26,15 @@ module.exports = class LicenseBannerPlugin {
     this.recursiveInclude = options.recursiveInclude
     this.basePath = options.basePath || path.normalize('../../')
     this.parsePeerDependencies = options.parsePeerDependencies
+
+    this.templateData = this.adjustPackageInfo(require(path.join(this.basePath, 'package.json')))
+
+    this.dependencies = [this.adjustPackageInfo(require('webpack/package.json'))]
+    this.parsePackageInfo(this.templateData, this.basePath)
+
+    if (this.options.additionalData) {
+      Object.assign(this.templateData, this.options.additionalData)
+    }
   }
 
   adjustPackageInfo (packageInfo) {
@@ -43,53 +50,41 @@ module.exports = class LicenseBannerPlugin {
 
   findPackageJson (packagePath, packageName) {
     let possiblePath = path.join(packagePath, 'node_modules', packageName, 'package.json')
-    if (fs.existsSync(path.join(__dirname, possiblePath))) {
+    if (fs.existsSync(path.join(possiblePath))) {
       return require(possiblePath)
     } else if (packagePath !== this.basePath) {
       return this.findPackageJson(path.join(packagePath, '../../'), packageName)
     } else {
-      throw new Error(`Package not found. Name: ${packageName}.`)
+      throw new Error(`Package not found. Path: ${packagePath}. Name: ${packageName}.`)
     }
   }
 
-  parsePackageInfo (packageInfo, packagePath, allDependencies = []) {
+  parsePackageInfo (packageInfo, packagePath) {
     let packageDependencies = packageInfo.dependencies ? packageInfo.dependencies : {}
-
     if (this.parsePeerDependencies && packageInfo.peerDependencies) {
       Object.assign(packageDependencies, packageInfo.peerDependencies)
     }
 
     for (let dependency of Object.keys(packageDependencies)) {
-      if (!allDependencies.some(d => d.name === dependency)) {
+      if (!this.dependencies.some(d => d.name === dependency)) {
         let childPackageInfo = this.adjustPackageInfo(this.findPackageJson(packagePath, dependency))
-        allDependencies.push(childPackageInfo)
+        this.dependencies.push(childPackageInfo)
         if (this.recursiveInclude && dependency.match(this.recursiveInclude)) {
-          this.parsePackageInfo(childPackageInfo, path.join(packagePath, 'node_modules', dependency), allDependencies)
+          this.parsePackageInfo(childPackageInfo, path.join(packagePath, 'node_modules', dependency))
         }
       }
     }
-
-    return allDependencies
   }
 
   apply (compiler) {
     let options = this.options
-
     let bannerTemplate = this.bannerTemplate
 
-    let templateData = this.adjustPackageInfo(require(path.join(this.basePath, 'package.json')))
-
-    let dependencies = [this.adjustPackageInfo(require('webpack/package.json'))]
-    this.parsePackageInfo(templateData, this.basePath, dependencies)
-    templateData.dependencies = dependencies
+    this.templateData.dependencies = this.dependencies
       .filter(dep => !compiler.options.externals.hasOwnProperty(dep.name))
       .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1)
 
-    if (options.additionalData) {
-      Object.assign(templateData, options.additionalData)
-    }
-
-    let banner = Mustache.render(bannerTemplate, templateData)
+    let banner = Mustache.render(bannerTemplate, this.templateData)
 
     compiler.plugin('compilation', compilation => {
       compilation.plugin('optimize-chunk-assets', (chunks, callback) => {

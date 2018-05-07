@@ -1,17 +1,18 @@
 'use strict'
 
+const path = require('path')
+
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-let g4uPackageInfo = require('../../package.json')
+const baseDir = process.cwd()
 
+let g4uPackageInfo = require(path.join(baseDir, 'package.json'))
 if (g4uPackageInfo.name !== 'guide4you') {
-  g4uPackageInfo = require('guide4you/package.json')
+  g4uPackageInfo = require(path.join(baseDir, 'node_modules/guide4you/package.json'))
 }
 
 const g4uVersion = g4uPackageInfo.version
-
-// let baseDir = process.cwd()
 
 module.exports = {
   plugins: [
@@ -20,6 +21,9 @@ module.exports = {
       filename: 'css/[name]-debug.css'
     })
   ],
+  optimization: {
+    minimize: false
+  },
   output: {
     filename: 'js/[name]-debug.js'
   }

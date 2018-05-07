@@ -17,7 +17,7 @@ module.exports = function (content) {
   })
 
   var url = loaderUtils.interpolateName(this, config.name, {
-    context: config.context || this.options.context,
+    context: config.context,
     content: content,
     regExp: config.regExp
   })
