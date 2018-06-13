@@ -48,6 +48,29 @@ module.exports = {
           ],
           publicPath: '../'
         })
+      },
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'images/[name].[ext]'
+            }
+          },
+          'mustache-loader'
+        ]
+      },
+      {
+        test: /\.(jpg|jpeg|png)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'images/[name].[ext]'
+            }
+          }
+        ]
       }
     ],
     noParse: [

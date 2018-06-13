@@ -29,7 +29,7 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin()
   ],
-  devtool: 'inline-source-map',
+  devtool: 'eval-source-map',
   output: {
     filename: 'js/[name]-[hash].js'
   },
