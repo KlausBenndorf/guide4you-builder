@@ -9,8 +9,8 @@ const baseDir = process.cwd()
 
 module.exports = {
   target: 'web',
-  entry: {
-    'g4u': [ 'babel-polyfill' ]
+  node: {
+    fs: 'empty'
   },
   resolveLoader: {
     alias: {
@@ -48,6 +48,29 @@ module.exports = {
           ],
           publicPath: '../'
         })
+      },
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'images/[name].[ext]'
+            }
+          },
+          'mustache-loader'
+        ]
+      },
+      {
+        test: /\.(jpg|jpeg|png)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'images/[name].[ext]'
+            }
+          }
+        ]
       }
     ],
     noParse: [

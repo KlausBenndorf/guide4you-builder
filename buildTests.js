@@ -62,4 +62,3 @@ webpack(wConf, function (err, stats) {
     }
   }
 })
-
