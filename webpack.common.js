@@ -29,6 +29,11 @@ module.exports = {
   module: {
     rules: [
       {
+        type: 'javascript/auto',
+        test: /\.json$/,
+        use: []
+      },
+      {
         test: /\.js$/,
         exclude: /(node_modules.(?!guide4you))/,
         use: {
