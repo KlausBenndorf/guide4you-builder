@@ -9,6 +9,9 @@ const baseDir = process.cwd()
 
 module.exports = {
   target: 'web',
+  entry: {
+    'g4u': ['babel-polyfill']
+  },
   node: {
     fs: 'empty'
   },

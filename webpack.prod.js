@@ -4,6 +4,8 @@ const path = require('path')
 
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const baseDir = process.cwd()
 
@@ -19,6 +21,17 @@ module.exports = {
     new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin({
       filename: 'css/[name].css'
+    }),
+    new CopyWebpackPlugin([
+      { from: 'node_modules/jquery/dist/jquery.min.js', to: 'js/jquery.min.js' },
+      { from: 'node_modules/openlayers/dist/ol.js', to: 'js/ol.js' }
+    ]),
+    new HtmlWebpackIncludeAssetsPlugin({
+      assets: [
+        'js/jquery.min.js',
+        'js/ol.js'
+      ],
+      append: false
     })
   ],
   optimization: {

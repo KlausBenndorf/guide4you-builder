@@ -23,6 +23,9 @@ module.exports = {
       }
     ]
   },
+  optimization: {
+    minimize: false
+  },
   output: {
     filename: '[name]'
   }

@@ -5,7 +5,6 @@ const path = require('path')
 const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const baseDir = process.cwd()
 
@@ -18,26 +17,22 @@ const g4uVersion = g4uPackageInfo.version
 
 module.exports = {
   plugins: [
-    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'DEBUG\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
+    new webpack.DefinePlugin({ SWITCH_DEBUG: '\'PRODUCTION\'', GUIDE4YOU_VERSION: '\'v' + g4uVersion + '\'' }),
     new ExtractTextPlugin({
-      filename: 'css/[name]-debug.css'
+      filename: 'css/[name].css'
     }),
-    new CopyWebpackPlugin([
-      { from: 'node_modules/jquery/dist/jquery.js', to: 'js/jquery.js' },
-      { from: 'node_modules/openlayers/dist/ol-debug.js', to: 'js/ol-debug.js' }
-    ]),
     new HtmlWebpackIncludeAssetsPlugin({
       assets: [
-        'js/jquery.js',
-        'js/ol-debug.js'
+        '../node_modules/jquery/dist/jquery.min.js',
+        '../node_modules/openlayers/dist/ol.js'
       ],
       append: false
     })
   ],
   optimization: {
-    minimize: false
+    minimize: true
   },
   output: {
-    filename: 'js/[name]-debug.js'
+    filename: 'js/[name].js'
   }
 }
