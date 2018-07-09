@@ -32,12 +32,13 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       { from: 'node_modules/jquery/dist/jquery.js', to: 'js/jquery.js' },
-      { from: 'node_modules/openlayers/dist/ol-debug.js', to: 'js/ol-debug.js' }
+      { from: 'node_modules/openlayers/dist/ol.js', to: 'js/ol.js' },
+      { from: 'node_modules/openlayers/dist/ol.js', to: 'js/ol.js.map' }
     ]),
     new HtmlWebpackIncludeAssetsPlugin({
       assets: [
         'js/jquery.js',
-        'js/ol-debug.js'
+        'js/ol.js'
       ],
       append: false
     })
