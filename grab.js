@@ -18,7 +18,7 @@ for (let i = 2; i < process.argv.length; i++) {
   }
 
   copy(sourceRepoPath, nodeModulePath, {
-    filter: new RegExp(reponame + '(/|\\)(?!node_modules)'),
+    filter: new RegExp(reponame + '.(?!node_modules)[^.]'),
     stopOnError: true
   }, function (err) {
     if (err) {
