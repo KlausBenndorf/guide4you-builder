@@ -16,15 +16,16 @@ const getopt = new Getopt([
   [ 'r', 'remove', 'Remove the files for clean reinstall.' ]
 ])
 
+getopt.setHelp(
+  'Usage: node grab.js repository [repository+] [OPTION]\n' +
+  'grabs all files but the node_modules and files starting with a ".".\n' +
+  '\n' +
+  '[[OPTIONS]]'
+)
+
 getopt.parseSystem()
 
 if (getopt.argv.length < 1) {
-  getopt.setHelp(
-    'Usage: node grab.js repository [repository+] [OPTION]\n' +
-    'grabs all files but the node_modules and files starting with a ".".\n' +
-    '\n' +
-    '[[OPTIONS]]'
-  )
   getopt.showHelp()
   process.exit(0)
 }
