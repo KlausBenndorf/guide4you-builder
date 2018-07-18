@@ -2,27 +2,33 @@
 
 'use strict'
 
-const getopt = require('node-getopt')
+const Getopt = require('node-getopt')
 const fs = require('fs')
 const path = require('path')
 const rimraf = require('rimraf')
 const mkdirp = require('mkdirp')
 
-let args = getopt.create([
-  [ 'i', 'include=+', 'Include other guide4you packages into the buildTests process.' ]
-])
-  .bindHelp()
+let getopt = new Getopt([])
   .parseSystem()
+
+getopt.setHelp(
+  'Usage: node buildTests.js folder [folder+] [OPTION]\n' +
+  'build all tests in the specified folders.\n' +
+  '\n' +
+  '[[OPTIONS]]'
+)
+
+if (getopt.argv.length < 1) {
+  getopt.showHelp()
+  process.exit(1)
+}
 
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
 
 const baseDir = process.cwd()
-let inputDirs = [path.join(baseDir, 'tests')]
 
-if (args.options.include) {
-  inputDirs = inputDirs.concat(args.options.include.map(p => path.join(baseDir, p, 'tests')))
-}
+const inputDirs = getopt.argv.map(p => path.join(baseDir, p))
 
 const outputDir = path.join(baseDir, 'build/tests')
 
