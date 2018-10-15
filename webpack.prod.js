@@ -24,7 +24,7 @@ module.exports = {
     }),
     new CopyWebpackPlugin([
       { from: 'node_modules/jquery/dist/jquery.min.js', to: 'js/jquery.min.js' },
-      { from: 'node_modules/openlayers/dist/ol.js', to: 'js/ol.js' }
+      { from: 'node_modules/ol/dist/ol.js', to: 'js/ol.js' }
     ]),
     new HtmlWebpackIncludeAssetsPlugin({
       assets: [
