@@ -32,8 +32,8 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       { from: 'node_modules/jquery/dist/jquery.js', to: 'js/jquery.js' },
-      { from: 'node_modules/openlayers/dist/ol.js', to: 'js/ol.js' },
-      { from: 'node_modules/openlayers/dist/ol.js', to: 'js/ol.js.map' }
+      { from: 'node_modules/ol/dist/ol.js', to: 'js/ol.js' },
+      { from: 'node_modules/ol/dist/ol.js', to: 'js/ol.js.map' }
     ]),
     new HtmlWebpackIncludeAssetsPlugin({
       assets: [
