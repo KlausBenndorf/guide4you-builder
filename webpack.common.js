@@ -91,7 +91,7 @@ module.exports = {
     umdNamedDefine: true
   },
   externals: {
-    'openlayers': {
+    'ol': {
       commonjs: 'ol',
       commonjs2: 'ol',
       amd: 'ol',
