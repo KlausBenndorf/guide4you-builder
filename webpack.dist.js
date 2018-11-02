@@ -23,8 +23,7 @@ module.exports = {
     }),
     new HtmlWebpackIncludeAssetsPlugin({
       assets: [
-        '../node_modules/jquery/dist/jquery.min.js',
-        '../node_modules/ol/dist/ol.js'
+        '../node_modules/jquery/dist/jquery.min.js'
       ],
       append: false
     })
