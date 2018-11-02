@@ -38,7 +38,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /(node_modules.(?!guide4you))/,
+        exclude: /(node_modules.(?!(guide4you)|(ol)))/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -82,7 +82,7 @@ module.exports = {
       }
     ],
     noParse: [
-      /proj4\.js$/
+      /proj4\/dist\/proj4\.js$/
     ]
   },
   output: {
@@ -91,12 +91,6 @@ module.exports = {
     umdNamedDefine: true
   },
   externals: {
-    'ol': {
-      commonjs: 'ol',
-      commonjs2: 'ol',
-      amd: 'ol',
-      root: 'ol'
-    },
     'jquery': {
       commonjs: 'jQuery',
       commonjs2: 'jQuery',

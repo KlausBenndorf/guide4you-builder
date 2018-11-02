@@ -23,19 +23,31 @@ module.exports = {
       filename: 'css/[name].css'
     }),
     new CopyWebpackPlugin([
-      { from: 'node_modules/jquery/dist/jquery.min.js', to: 'js/jquery.min.js' },
-      { from: 'node_modules/ol/dist/ol.js', to: 'js/ol.js' }
+      { from: 'node_modules/jquery/dist/jquery.min.js', to: 'js/jquery.min.js' }
     ]),
     new HtmlWebpackIncludeAssetsPlugin({
       assets: [
-        'js/jquery.min.js',
-        'js/ol.js'
+        'js/jquery.min.js'
       ],
       append: false
     })
   ],
   optimization: {
-    minimize: true
+    minimize: true,
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/](?!guide4you)/,
+          priority: -10,
+          minSize: 0
+        },
+        ol: {
+          test: /[\\/]node_modules[\\/]ol[\\/]/,
+          minSize: 0
+        }
+      }
+    }
   },
   output: {
     filename: 'js/[name].js'
