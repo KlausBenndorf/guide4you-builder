@@ -29,7 +29,9 @@ module.exports = function (content) {
     publicPath = JSON.stringify(
       typeof config.publicPath === 'function'
         ? config.publicPath(url)
-        : config.publicPath + url
+        : config.publicPath + url,
+      null,
+      2
     )
   }
 
